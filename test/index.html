@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RedRay - Socket Test</title>
+
+    <link rel="stylesheet" href="../stylesheets/style.css">
+    <link rel="stylesheet" href="../stylesheets/font.css">
+    <link rel="stylesheet" href="../stylesheets/test.css">
+
+</head>
+<body>
+
+    <a href="/">
+      <span><- Back</span>
+    </a>
+    <h1>PDF WebSocket Test</h1>
+    <input type="file" id="pdfInput" accept=".pdf">
+    <button id="sendButton" disabled>Send PDF</button>
+    <h2>Server Response:</h2>
+    <div id="output"></div>
+
+    
+    <script>
+        const ws = new WebSocket('ws://localhost:8080/ws');
+        const pdfInput = document.getElementById('pdfInput');
+        const sendButton = document.getElementById('sendButton');
+        const output = document.getElementById('output');
+
+        ws.onopen = () => {
+            console.log('Connected to WebSocket');
+            sendButton.disabled = false;
+        };
+
+        ws.onmessage = (event) => {
+            try {
+                const data = JSON.parse(event.data);
+                output.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                output.textContent = 'Error parsing server response: ' + error.message;
+            }
+        };
+
+        ws.onerror = (error) => {
+            console.error('WebSocket Error:', error);
+            output.textContent = 'WebSocket Error: ' + error.message;
+        };
+
+        ws.onclose = () => {
+            console.log('Disconnected from WebSocket');
+            sendButton.disabled = true;
+        };
+
+        sendButton.onclick = () => {
+            const file = pdfInput.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const base64PDF = e.target.result.replace(/^data:application\/pdf;base64,/, '');
+                    ws.send(base64PDF);
+                    output.textContent = 'Sending PDF to server...';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                output.textContent = 'Please select a PDF file first.';
+            }
+        };
+
+        pdfInput.onchange = () => {
+            sendButton.disabled = !pdfInput.files.length;
+        };
+    </script>
+
+</body>
+</html>

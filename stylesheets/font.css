@@ -1,0 +1,53 @@
+@font-face {
+    font-family: 'Agave Nerd Font';
+    src: local('AgaveNF-Regular'),
+         url('/fonts/AgaveNF-Regular.woff2') format('woff2'),
+         url('/fonts/AgaveNF-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Agave Nerd Font';
+    src: local('AgaveNF-Bold'),
+         url('/fonts/AgaveNF-Bold.woff2') format('woff2'),
+         url('/fonts/AgaveNF-Bold.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Agave Nerd Font Mono';
+    src: local('AgaveNFM-Regular'),
+         url('/fonts/AgaveNFM-Regular.woff2') format('woff2'),
+         url('/fonts/AgaveNFM-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Agave Nerd Font Mono';
+    src: local('AgaveNFM-Bold'),
+         url('/fonts/AgaveNFM-Bold.woff2') format('woff2'),
+         url('/fonts/AgaveNFM-Bold.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Agave Nerd Font Propo';
+    src: local('AgaveNFP-Regular'),
+         url('/fonts/AgaveNFP-Regular.woff2') format('woff2'),
+         url('/fonts/AgaveNFP-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Agave Nerd Font Propo';
+    src: local('AgaveNFP-Bold'),
+         url('/fonts/AgaveNFP-Bold.woff2') format('woff2'),
+         url('/fonts/AgaveNFP-Bold.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+}

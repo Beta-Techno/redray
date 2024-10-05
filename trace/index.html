@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Viewer</title>
+    <style>
+        #pdfContainer {
+            width: 800px;
+            height: 600px;
+            border: 1px solid black;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <input type="file" id="pdfInput" accept=".pdf">
+    <button id="sendButton" disabled>Send PDF</button>
+    <div id="output"></div>
+    <div id="pdfContainer"></div>
+    <div>
+        <button id="prevPage">Previous Page</button>
+        <span id="pageInfo"></span>
+        <button id="nextPage">Next Page</button>
+    </div>
+    <script src="../javascripts/renderer.js"></script>
+</body>
+</html>

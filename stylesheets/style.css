@@ -1,0 +1,90 @@
+html {
+  font-family: 'Agave Nerd Font';
+  font-family: 'Agave Nerd Font Mono';
+  /* No diff between mono and standard?? */
+  font-size: 22px;
+}
+
+body {
+  margin: 0px;
+  padding: 0px;
+}
+
+
+:root {
+
+
+  --primary-hue: 50;
+  --p-saturation: 8%;
+  --p-lightness: 85%;
+
+  --secondary-hue: 217;
+  --s-saturation: 38%;
+  --s-lightness: 13%;
+
+  --primary: hsla(var(--primary-hue), var(--p-saturation), var(--p-lightness), 1);
+  --primary-fade: hsla(var(--primary-hue), var(--p-saturation), var(--p-lightness), 0.9);
+  --primary-fader: hsla(var(--primary-hue), var(--p-saturation), var(--p-lightness), 0.8);
+  --primary-fadest: hsla(var(--primary-hue), var(--p-saturation), var(--p-lightness), 0.7);
+  --primary-clear: hsla(var(--primary-hue), var(--p-saturation), var(--p-lightness), 0.4);
+  --primary-clearer: hsla(var(--primary-hue), var(--p-saturation), var(--p-lightness), 0.3);
+  --primary-clearest: hsla(var(--primary-hue), var(--p-saturation), var(--p-lightness), 0.2);
+
+  --p1: hsla(var(--primary-hue), var(--p-saturation), 80%, 1);
+  --p2: hsla(var(--primary-hue), var(--p-saturation), 55%, 1);
+  --p3: hsla(var(--primary-hue), var(--p-saturation), 35%, 1);
+  --p4: hsla(var(--primary-hue), var(--p-saturation), 25%, 1);
+  --p6: hsla(var(--primary-hue), var(--p-saturation), 20%, 1);
+  --p7: hsla(var(--primary-hue), var(--p-saturation), 15%, 1);
+  --p8: hsla(var(--primary-hue), var(--p-saturation), 10%, 1);
+  --p9: hsla(var(--primary-hue), var(--p-saturation), 4%, 1);
+
+
+  --secondary: hsla(var(--secondary-hue), var(--s-saturation), var(--s-lightness), 1);
+  --secondary-fade: hsla(var(--secondary-hue), var(--s-saturation), var(--s-lightness), 0.9);
+  --secondary-fader: hsla(var(--secondary-hue), var(--s-saturation), var(--s-lightness), 0.8);
+  --secondary-fadest: hsla(var(--secondary-hue), var(--s-saturation), var(--s-lightness), 0.7);
+  --secondary-clear: hsla(var(--secondary-hue), var(--s-saturation), var(--s-lightness), 0.4);
+  --secondary-clearer: hsla(var(--secondary-hue), var(--s-saturation), var(--s-lightness), 0.3);
+  --secondary-clearest: hsla(var(--secondary-hue), var(--s-saturation), var(--s-lightness), 0.2);
+
+  --s1: hsla(var(--secondary-hue), var(--s-saturation), 80%, 1);
+  --s2: hsla(var(--secondary-hue), var(--s-saturation), 55%, 1);
+  --s3: hsla(var(--secondary-hue), var(--s-saturation), 35%, 1);
+  --s4: hsla(var(--secondary-hue), var(--s-saturation), 25%, 1);
+  --s6: hsla(var(--secondary-hue), var(--s-saturation), 20%, 1);
+  --s7: hsla(var(--secondary-hue), var(--s-saturation), 15%, 1);
+  --s8: hsla(var(--secondary-hue), var(--s-saturation), 10%, 1);
+  --s9: hsla(var(--secondary-hue), var(--s-saturation), 4%, 1);
+
+
+  --white: rgba(255, 255, 255, 1);
+  --white-fade: rgba(255, 255, 255, 0.9);
+  --white-fader: rgba(255, 255, 255, 0.8);
+  --white-fadest: rgba(255, 255, 255, 0.7);
+  --white-clear: rgba(255, 255, 255, 0.4);
+  --white-clearer: rgba(255, 255, 255, 0.3);
+  --white-clearest: rgba(255, 255, 255, 0.2);
+
+
+  --light: #F2F2F2;
+  --mid: #D9D4D0;
+  --grey: #BDBFBF;
+  --shadow: hsla(var(--shadow-hue), var(--shadow-saturation), var(--shadow-lightness), var(--shadow-alpha));
+  --shadow-light: hsla(var(--shadow-hue), var(--shadow-saturation), var(--shadow-lightness), 0.2);
+  --shadow-clear: hsla(var(--shadow-hue), var(--shadow-saturation), var(--shadow-lightness), 0);
+
+
+
+  --background: rgb(175, 175, 175);
+
+  --mid-background: var(--p8);
+  --light-background: var(--white-clearer);
+  --color: rgb(175, 175, 175);
+  --highlight: var(--white);
+  --icons: var(--white);
+  --maintext: var(--primary-fader);
+  --subtext: var(--primary-fader);
+}
+
+
