@@ -9,15 +9,19 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "next": "15.2.3"
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "next": "15.2.3",
+    "@tldraw/tldraw": "^2.0.0-alpha.17",
+    "pdfjs-dist": "^4.0.379",
+    "zustand": "^4.5.0",
+    "pdf-lib": "^1.17.1"
   },
   "devDependencies": {
     "typescript": "^5",
     "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
     "@tailwindcss/postcss": "^4",
     "tailwindcss": "^4",
     "eslint": "^9",

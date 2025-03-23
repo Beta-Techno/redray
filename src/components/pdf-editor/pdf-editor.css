@@ -1,0 +1,55 @@
+.PdfEditor {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.PdfPicker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.PdfPicker button {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: white;
+  cursor: pointer;
+}
+
+.PdfPicker button:hover {
+  background: #f0f0f0;
+}
+
+.ExportPdfButton {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: white;
+  cursor: pointer;
+}
+
+.ExportPdfButton:hover {
+  background: #f0f0f0;
+}
+
+.PageOverlayScreen-screen {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.PageOverlayScreen-screen path {
+  fill: rgba(0, 0, 0, 0.1);
+}
+
+.PageOverlayScreen-outline {
+  position: absolute;
+  border: 1px solid #ccc;
+  pointer-events: none;
+} 
