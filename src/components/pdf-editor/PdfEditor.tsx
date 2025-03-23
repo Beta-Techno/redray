@@ -16,8 +16,11 @@ import {
 } from '@tldraw/tldraw';
 import { ExportPdfButton } from './ExportPdfButton';
 import { Pdf } from './PdfPicker';
+import { useEditorContext } from '../editor/EditorContext';
 
 export function PdfEditor({ pdf }: { pdf: Pdf }) {
+  const { setEditor } = useEditorContext();
+  
   const components = useMemo<TLComponents>(
     () => ({
       PageMenu: null,
@@ -30,6 +33,8 @@ export function PdfEditor({ pdf }: { pdf: Pdf }) {
   return (
     <Tldraw
       onMount={(editor) => {
+        setEditor(editor);
+        
         editor.createAssets(
           pdf.pages.map((page) => ({
             id: page.assetId,
