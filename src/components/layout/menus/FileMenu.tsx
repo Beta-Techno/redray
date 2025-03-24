@@ -1,11 +1,60 @@
 import { MenubarContent, MenubarItem, MenubarMenu, MenubarSeparator, MenubarShortcut, MenubarSub, MenubarSubContent, MenubarSubTrigger, MenubarTrigger } from "@/components/ui/menubar";
-import { FileIcon, FolderIcon, PlusIcon, BookIcon, LayersIcon, MailIcon, PrinterIcon, Share2Icon } from "lucide-react";
+import { FileIcon, FolderIcon, PlusIcon, BookIcon, LayersIcon, MailIcon, PrinterIcon, Share2Icon, Settings2Icon, LogOutIcon, UserIcon, EyeIcon, PencilIcon, KeyboardIcon, ShieldIcon } from "lucide-react";
 import { useState } from 'react';
 import { Pdf } from '@/components/pdf-editor/PdfPicker';
 import { loadPdf } from '@/utils/pdf';
 
 interface FileMenuProps {
   onOpenPdf?: (pdf: Pdf) => void;
+}
+
+export function RedRayMenu() {
+  return (
+    <MenubarMenu>
+      <MenubarTrigger className="font-semibold">RedRay</MenubarTrigger>
+      <MenubarContent className="bg-[#333333] text-white border-[#404040] min-w-[280px]">
+        <MenubarItem className="flex items-center gap-2">
+          <UserIcon className="w-4 h-4" />
+          About
+        </MenubarItem>
+        <MenubarSeparator />
+        <MenubarItem className="flex items-center gap-2">
+          <Settings2Icon className="w-4 h-4" />
+          Preferences
+          <MenubarShortcut>Ctrl+K</MenubarShortcut>
+        </MenubarItem>
+        <MenubarItem className="flex items-center gap-2">
+          <EyeIcon className="w-4 h-4" />
+          View Mode
+        </MenubarItem>
+        <MenubarItem className="flex items-center gap-2">
+          <PencilIcon className="w-4 h-4" />
+          Markup Mode
+        </MenubarItem>
+        <MenubarItem className="flex items-center gap-2">
+          <UserIcon className="w-4 h-4" />
+          Profiles
+        </MenubarItem>
+        <MenubarItem className="flex items-center gap-2">
+          <KeyboardIcon className="w-4 h-4" />
+          Keyboard Shortcuts
+        </MenubarItem>
+        <MenubarItem className="flex items-center gap-2">
+          <ShieldIcon className="w-4 h-4" />
+          Administrator
+        </MenubarItem>
+        <MenubarSeparator />
+        <MenubarItem className="flex items-center gap-2">
+          Unregister
+        </MenubarItem>
+        <MenubarSeparator />
+        <MenubarItem className="flex items-center gap-2">
+          <LogOutIcon className="w-4 h-4" />
+          Exit
+        </MenubarItem>
+      </MenubarContent>
+    </MenubarMenu>
+  );
 }
 
 export function FileMenu({ onOpenPdf }: FileMenuProps) {

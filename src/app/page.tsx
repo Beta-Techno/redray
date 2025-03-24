@@ -4,7 +4,7 @@ import { useState } from 'react';
 import 'tldraw/tldraw.css';
 import { PdfEditor } from '@/components/pdf-editor/PdfEditor';
 import { Pdf, PdfPicker } from '@/components/pdf-editor/PdfPicker';
-import { BluebeamShell } from '@/components/layout/BluebeamShell';
+import { RedRayShell } from '@/components/layout/RedRayShell';
 import { EditorProvider } from '@/components/editor/EditorContext';
 import '@/components/pdf-editor/pdf-editor.css';
 
@@ -22,7 +22,7 @@ export default function Home() {
 
   return (
     <EditorProvider>
-      <BluebeamShell onOpenPdf={(pdf) => setState({ phase: 'edit', pdf })}>
+      <RedRayShell onOpenPdf={(pdf) => setState({ phase: 'edit', pdf })}>
         {state.phase === 'pick' ? (
           <div className="PdfEditor">
             <PdfPicker onOpenPdf={(pdf) => setState({ phase: 'edit', pdf })} />
@@ -32,7 +32,7 @@ export default function Home() {
             <PdfEditor pdf={state.pdf} />
           </div>
         )}
-      </BluebeamShell>
+      </RedRayShell>
     </EditorProvider>
   );
 }

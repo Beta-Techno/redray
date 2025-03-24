@@ -6,7 +6,7 @@ export function HelpMenu() {
       <MenubarTrigger>Help</MenubarTrigger>
       <MenubarContent className="bg-[#333333] text-white border-[#404040] min-w-[280px]">
         <MenubarItem className="flex items-center gap-2">
-          Bluebeam Help
+          Red Ray Help
           <MenubarShortcut>F1</MenubarShortcut>
         </MenubarItem>
 
@@ -45,7 +45,7 @@ export function HelpMenu() {
         <MenubarSeparator className="bg-[#404040]" />
 
         <MenubarItem className="flex items-center gap-2">
-          About Bluebeam Revu
+          About Red Ray Revu
         </MenubarItem>
       </MenubarContent>
     </MenubarMenu>

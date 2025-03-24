@@ -1,7 +1,7 @@
-# Bluebeam-like PDF Editor Implementation Plan
+# Red Ray PDF Editor Implementation Plan
 
 ## Overview
-Creating a FOSS alternative to Bluebeam with focus on construction industry needs.
+Creating a FOSS alternative to Red Ray with focus on construction industry needs.
 
 ## UI Implementation Phases
 
@@ -9,7 +9,7 @@ Creating a FOSS alternative to Bluebeam with focus on construction industry need
 - [x] Initial Next.js setup
 - [ ] Install and configure shadcn/ui
 - [ ] Implement main layout grid
-- [ ] Create dark theme matching Bluebeam
+- [ ] Create dark theme matching Red Ray
 
 ### Phase 2: Core Components
 1. **Top Bar**

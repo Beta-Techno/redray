@@ -8,6 +8,7 @@ import { DocumentMenu } from './menus/DocumentMenu';
 import { ToolsMenu } from './menus/ToolsMenu';
 import { WindowMenu } from './menus/WindowMenu';
 import { HelpMenu } from './menus/HelpMenu';
+import { RedRayMenu } from './menus/FileMenu';
 import { Menubar } from '@/components/ui/menubar';
 import { Pdf } from '@/components/pdf-editor/PdfPicker';
 import { useEditorContext } from '@/components/editor/EditorContext';
@@ -69,6 +70,18 @@ import {
   ImageIcon,
   TargetIcon,
   BoxIcon,
+  RulerIcon,
+  SplitSquareHorizontalIcon,
+  SplitSquareVerticalIcon,
+  ScaleIcon,
+  FileTextIcon,
+  PlusIcon,
+  MinusIcon,
+  BugIcon,
+  SparklesIcon,
+  PanelLeftIcon,
+  PanelRightIcon,
+  PanelBottomIcon,
 } from 'lucide-react';
 import { 
   DropdownMenu,
@@ -77,12 +90,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-interface BluebeamShellProps {
+interface RedRayShellProps {
   children: ReactNode;
   onOpenPdf?: (pdf: Pdf) => void;
 }
 
 const GEO_SHAPES = [
+  { id: 'rectangle', label: 'Rectangle', icon: SquareIcon },
+  { id: 'ellipse', label: 'Ellipse', icon: CircleIcon },
   { id: 'star', label: 'Star', icon: StarIcon },
   { id: 'triangle', label: 'Triangle', icon: TriangleIcon },
   { id: 'diamond', label: 'Diamond', icon: DiamondIcon },
@@ -103,14 +118,28 @@ const GEO_SHAPES = [
   { id: 'arrow-down', label: 'Arrow Down', icon: ArrowDownIcon },
 ] as const;
 
-export function BluebeamShell({ children, onOpenPdf }: BluebeamShellProps) {
+export function RedRayShell({ children, onOpenPdf }: RedRayShellProps) {
   const { editor } = useEditorContext();
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
   const [hasSelectedShapes, setHasSelectedShapes] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [currentTool, setCurrentTool] = useState<string>('select');
+  const [zoomLevel, setZoomLevel] = useState(100);
+  const [isEditingZoom, setIsEditingZoom] = useState(false);
+  const [tempZoomValue, setTempZoomValue] = useState('100');
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const zoomInputRef = useRef<HTMLInputElement>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [isEditingPage, setIsEditingPage] = useState(false);
+  const [tempPageValue, setTempPageValue] = useState('1');
+  const pageInputRef = useRef<HTMLInputElement>(null);
+
+  // Add a function to check if editor is ready
+  const isEditorReady = () => {
+    return editor !== null;
+  };
 
   useEffect(() => {
     if (!editor) return;
@@ -119,6 +148,10 @@ export function BluebeamShell({ children, onOpenPdf }: BluebeamShellProps) {
       setCanUndo(editor.getCanUndo());
       setCanRedo(editor.getCanRedo());
       setHasSelectedShapes(editor.getSelectedShapeIds().length > 0);
+      // Update zoom level
+      const zoom = editor.getZoomLevel();
+      setZoomLevel(Math.round(zoom * 100));
+      setTempZoomValue(Math.round(zoom * 100).toString());
     };
 
     // Initial state
@@ -145,15 +178,62 @@ export function BluebeamShell({ children, onOpenPdf }: BluebeamShellProps) {
     });
   }, [editor]);
 
+  // Add zoom handlers
+  const handleZoomIn = () => {
+    if (!isEditorReady()) return;
+    editor?.zoomIn();
+  };
+
+  const handleZoomOut = () => {
+    if (!isEditorReady()) return;
+    editor?.zoomOut();
+  };
+
+  const handleZoomToFit = () => {
+    if (!isEditorReady()) return;
+    editor?.zoomToFit();
+  };
+
+  const handleZoomInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setTempZoomValue(value);
+  };
+
+  const handleZoomInputBlur = () => {
+    if (!isEditorReady()) return;
+    const value = parseInt(tempZoomValue);
+    if (!isNaN(value) && value > 0) {
+      const currentCamera = editor?.getCamera();
+      if (currentCamera) {
+        editor?.setCamera({
+          ...currentCamera,
+          z: value / 100
+        });
+      }
+    } else {
+      setTempZoomValue(zoomLevel.toString());
+    }
+    setIsEditingZoom(false);
+  };
+
+  const handleZoomInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleZoomInputBlur();
+    }
+  };
+
   const handleUndo = () => {
+    if (!isEditorReady()) return;
     editor?.undo();
   };
 
   const handleRedo = () => {
+    if (!isEditorReady()) return;
     editor?.redo();
   };
 
   const handleDelete = () => {
+    if (!isEditorReady()) return;
     const selectedIds = editor?.getSelectedShapeIds();
     if (selectedIds?.length) {
       editor?.deleteShapes(selectedIds);
@@ -161,10 +241,43 @@ export function BluebeamShell({ children, onOpenPdf }: BluebeamShellProps) {
   };
 
   const handleDuplicate = () => {
+    if (!isEditorReady()) return;
     const selectedIds = editor?.getSelectedShapeIds();
     if (selectedIds?.length && editor) {
       editor.duplicateShapes(selectedIds, { x: 32, y: 0 });
     }
+  };
+
+  const handleToolChange = (toolId: string) => {
+    if (!isEditorReady()) return;
+    editor?.setCurrentTool(toolId);
+  };
+
+  const handleGeoShapeChange = (shapeId: typeof GEO_SHAPES[number]['id']) => {
+    if (!isEditorReady()) return;
+    editor?.setCurrentTool('geo');
+    editor?.setStyleForNextShapes(GeoShapeGeoStyle, shapeId);
+    setCurrentTool(`geo-${shapeId}`);
+  };
+
+  const handleImageButtonClick = () => {
+    if (!isEditorReady()) return;
+    fileInputRef.current?.click();
+  };
+
+  const handleFileInputChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!isEditorReady()) return;
+    const file = event.target.files?.[0];
+    if (file && editor) {
+      const point = editor.getViewportScreenCenter();
+      await editor.putExternalContent({
+        type: 'files',
+        files: [file],
+        point,
+        ignoreParent: false,
+      });
+    }
+    event.target.value = '';
   };
 
   async function handleOpenPdf() {
@@ -187,22 +300,25 @@ export function BluebeamShell({ children, onOpenPdf }: BluebeamShellProps) {
     input.click();
   }
 
-  const handleImageButtonClick = () => {
-    fileInputRef.current?.click();
+  const handlePageInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setTempPageValue(value);
   };
 
-  const handleFileInputChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file && editor) {
-      const point = editor.getViewportScreenCenter(); // position at viewport center
-      await editor.putExternalContent({
-        type: 'files',
-        files: [file],
-        point,
-        ignoreParent: false,
-      });
+  const handlePageInputBlur = () => {
+    const value = parseInt(tempPageValue);
+    if (!isNaN(value) && value > 0 && value <= totalPages) {
+      setCurrentPage(value);
+    } else {
+      setTempPageValue(currentPage.toString());
     }
-    event.target.value = '';
+    setIsEditingPage(false);
+  };
+
+  const handlePageInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handlePageInputBlur();
+    }
   };
 
   return (
@@ -210,16 +326,48 @@ export function BluebeamShell({ children, onOpenPdf }: BluebeamShellProps) {
       {/* Header Section */}
       <div className="shrink-0">
         {/* Top Menubar */}
-        <div className="h-8 border-b border-[#404040] flex items-center px-1 bg-[#333333]">
-          <Menubar className="border-none bg-transparent">
-            <FileMenu onOpenPdf={onOpenPdf} />
-            <EditMenu />
-            <ViewMenu />
-            <DocumentMenu />
-            <ToolsMenu />
-            <WindowMenu />
-            <HelpMenu />
-          </Menubar>
+        <div className="h-8 border-b border-[#404040] flex items-center bg-[#333333]">
+          {/* Left side - Menu */}
+          <div className="flex-none">
+            <Menubar className="border-none bg-transparent flex-1">
+              <RedRayMenu />
+              <FileMenu onOpenPdf={onOpenPdf} />
+              <EditMenu />
+              <ViewMenu />
+              <DocumentMenu />
+              <ToolsMenu />
+              <WindowMenu />
+              <HelpMenu />
+            </Menubar>
+          </div>
+
+          {/* Center - Search Bar */}
+          <div className="flex-1 flex justify-center items-center">
+            <div className="w-64 bg-[#2B2B2B] rounded px-2 py-0.5 flex items-center">
+              <SearchIcon className="w-3 h-3 text-gray-400 shrink-0" />
+              <span className="text-xs text-gray-400 flex-1 text-center">Search</span>
+            </div>
+          </div>
+
+          {/* Right side - Panel Indicators and Account Menu */}
+          <div className="flex-none flex items-center gap-2 border-l-2 border-[#404040] pl-4">
+            <button className="p-1 hover:bg-[#404040] rounded" title="Toggle Left Panel">
+              <PanelLeftIcon className="w-3 h-3" />
+            </button>
+            <button className="p-1 hover:bg-[#404040] rounded" title="Toggle Bottom Panel">
+              <PanelBottomIcon className="w-3 h-3" />
+            </button>
+            <button className="p-1 hover:bg-[#404040] rounded" title="Toggle Right Panel">
+              <PanelRightIcon className="w-3 h-3" />
+            </button>
+            <div className="w-px h-4 bg-[#404040] mx-2"></div>
+            <button className="p-1 hover:bg-[#404040] rounded" title="Notifications">
+              <BellIcon className="w-4 h-4" />
+            </button>
+            <button className="p-1 hover:bg-[#404040] rounded" title="Account">
+              <UserIcon className="w-4 h-4" />
+            </button>
+          </div>
         </div>
 
         {/* Toolbar */}
@@ -288,14 +436,14 @@ export function BluebeamShell({ children, onOpenPdf }: BluebeamShellProps) {
           <div className="flex items-center gap-2 border-r-2 border-[#404040] pr-4">
             <button 
               className={`p-1 rounded ${currentTool === 'select' ? 'bg-[#0078D4]' : 'hover:bg-[#404040]'}`}
-              onClick={() => editor?.setCurrentTool('select')}
+              onClick={() => handleToolChange('select')}
               title="Select"
             >
               <MousePointer2Icon className="w-5 h-5" />
             </button>
             <button 
               className={`p-1 rounded ${currentTool === 'hand' ? 'bg-[#0078D4]' : 'hover:bg-[#404040]'}`}
-              onClick={() => editor?.setCurrentTool('hand')}
+              onClick={() => handleToolChange('hand')}
               title="Hand"
             >
               <HandIcon className="w-5 h-5" />
@@ -306,21 +454,21 @@ export function BluebeamShell({ children, onOpenPdf }: BluebeamShellProps) {
           <div className="flex items-center gap-2 border-r-2 border-[#404040] pr-4">
             <button 
               className={`p-1 rounded ${currentTool === 'draw' ? 'bg-[#0078D4]' : 'hover:bg-[#404040]'}`}
-              onClick={() => editor?.setCurrentTool('draw')}
+              onClick={() => handleToolChange('draw')}
               title="Pen"
             >
               <PenIcon className="w-5 h-5" />
             </button>
             <button 
               className={`p-1 rounded ${currentTool === 'highlight' ? 'bg-[#0078D4]' : 'hover:bg-[#404040]'}`}
-              onClick={() => editor?.setCurrentTool('highlight')}
+              onClick={() => handleToolChange('highlight')}
               title="Highlight"
             >
               <HighlighterIcon className="w-5 h-5" />
             </button>
             <button 
               className={`p-1 rounded ${currentTool === 'eraser' ? 'bg-[#0078D4]' : 'hover:bg-[#404040]'}`}
-              onClick={() => editor?.setCurrentTool('eraser')}
+              onClick={() => handleToolChange('eraser')}
               title="Eraser"
             >
               <EraserIcon className="w-5 h-5" />
@@ -331,14 +479,14 @@ export function BluebeamShell({ children, onOpenPdf }: BluebeamShellProps) {
           <div className="flex items-center gap-2 border-r-2 border-[#404040] pr-4">
             <button 
               className={`p-1 rounded ${currentTool === 'text' ? 'bg-[#0078D4]' : 'hover:bg-[#404040]'}`}
-              onClick={() => editor?.setCurrentTool('text')}
+              onClick={() => handleToolChange('text')}
               title="Text"
             >
               <TextIcon className="w-5 h-5" />
             </button>
             <button 
               className={`p-1 rounded ${currentTool === 'note' ? 'bg-[#0078D4]' : 'hover:bg-[#404040]'}`}
-              onClick={() => editor?.setCurrentTool('note')}
+              onClick={() => handleToolChange('note')}
               title="Note"
             >
               <StickyNoteIcon className="w-5 h-5" />
@@ -364,75 +512,61 @@ export function BluebeamShell({ children, onOpenPdf }: BluebeamShellProps) {
             {/* Line and Arrow Tools */}
             <button 
               className={`p-1 rounded ${currentTool === 'line' ? 'bg-[#0078D4]' : 'hover:bg-[#404040]'}`}
-              onClick={() => editor?.setCurrentTool('line')}
+              onClick={() => handleToolChange('line')}
               title="Line"
             >
               <Minus className="w-5 h-5" />
             </button>
             <button 
               className={`p-1 rounded ${currentTool === 'arrow' ? 'bg-[#0078D4]' : 'hover:bg-[#404040]'}`}
-              onClick={() => editor?.setCurrentTool('arrow')}
+              onClick={() => handleToolChange('arrow')}
               title="Arrow"
             >
               <ArrowRightIcon className="w-5 h-5" />
             </button>
 
-            {/* Rectangle and Ellipse Tools */}
+            {/* Rectangle and Circle Tools */}
             <button 
               className={`p-1 rounded ${currentTool === 'geo-rectangle' ? 'bg-[#0078D4]' : 'hover:bg-[#404040]'}`}
-              onClick={() => {
-                editor?.setCurrentTool('geo');
-                editor?.setStyleForNextShapes(GeoShapeGeoStyle, 'rectangle');
-                setCurrentTool('geo-rectangle');
-              }}
+              onClick={() => handleGeoShapeChange('rectangle')}
               title="Rectangle"
             >
               <SquareIcon className="w-5 h-5" />
             </button>
             <button 
               className={`p-1 rounded ${currentTool === 'geo-ellipse' ? 'bg-[#0078D4]' : 'hover:bg-[#404040]'}`}
-              onClick={() => {
-                editor?.setCurrentTool('geo');
-                editor?.setStyleForNextShapes(GeoShapeGeoStyle, 'ellipse');
-                setCurrentTool('geo-ellipse');
-              }}
-              title="Ellipse"
+              onClick={() => handleGeoShapeChange('ellipse')}
+              title="Circle"
             >
               <CircleIcon className="w-5 h-5" />
             </button>
 
-            {/* Star Shape with Dropdown */}
+            {/* Other Shape Tools Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button 
-                  className={`p-1 rounded ${currentTool.startsWith('geo-') ? 'bg-[#0078D4]' : 'hover:bg-[#404040]'}`}
-                  title={GEO_SHAPES.find(s => currentTool === `geo-${s.id}`)?.label || 'Star'}
+                  className={`p-1 rounded ${currentTool.startsWith('geo-') && !['geo-rectangle', 'geo-ellipse'].includes(currentTool) ? 'bg-[#0078D4]' : 'hover:bg-[#404040]'}`}
+                  title={GEO_SHAPES.find(s => currentTool === `geo-${s.id}` && !['rectangle', 'ellipse'].includes(s.id))?.label || 'Star'}
                   onClick={() => {
-                    const currentShape = GEO_SHAPES.find(s => currentTool === `geo-${s.id}`) || GEO_SHAPES[0];
-                    editor?.setCurrentTool('geo');
-                    editor?.setStyleForNextShapes(GeoShapeGeoStyle, currentShape.id);
-                    setCurrentTool(`geo-${currentShape.id}`);
+                    const currentShape = GEO_SHAPES.find(s => currentTool === `geo-${s.id}` && !['rectangle', 'ellipse'].includes(s.id)) || GEO_SHAPES[2];
+                    handleGeoShapeChange(currentShape.id);
                   }}
                 >
                   {(() => {
-                    const currentShape = GEO_SHAPES.find(s => currentTool === `geo-${s.id}`) || GEO_SHAPES[0];
+                    const currentShape = GEO_SHAPES.find(s => currentTool === `geo-${s.id}` && !['rectangle', 'ellipse'].includes(s.id)) || GEO_SHAPES[2];
                     const Icon = currentShape.icon;
                     return <Icon className="w-5 h-5" />;
                   })()}
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-48 bg-[#2D2D2D] border-[#404040]">
-                {GEO_SHAPES.map((shape) => {
+                {GEO_SHAPES.filter(shape => !['rectangle', 'ellipse'].includes(shape.id)).map((shape) => {
                   const Icon = shape.icon;
                   return (
                     <DropdownMenuItem
                       key={shape.id}
                       className="text-white hover:bg-[#404040] cursor-pointer flex items-center gap-2"
-                      onClick={() => {
-                        editor?.setCurrentTool('geo');
-                        editor?.setStyleForNextShapes(GeoShapeGeoStyle, shape.id);
-                        setCurrentTool(`geo-${shape.id}`);
-                      }}
+                      onClick={() => handleGeoShapeChange(shape.id)}
                     >
                       <Icon className="w-4 h-4" />
                       {shape.label}
@@ -447,14 +581,14 @@ export function BluebeamShell({ children, onOpenPdf }: BluebeamShellProps) {
           <div className="flex items-center gap-2 border-r-2 border-[#404040] pr-4">
             <button 
               className={`p-1 rounded ${currentTool === 'laser' ? 'bg-[#0078D4]' : 'hover:bg-[#404040]'}`}
-              onClick={() => editor?.setCurrentTool('laser')}
+              onClick={() => handleToolChange('laser')}
               title="Laser Pointer"
             >
               <TargetIcon className="w-5 h-5" />
             </button>
             <button 
               className={`p-1 rounded ${currentTool === 'frame' ? 'bg-[#0078D4]' : 'hover:bg-[#404040]'}`}
-              onClick={() => editor?.setCurrentTool('frame')}
+              onClick={() => handleToolChange('frame')}
               title="Frame"
             >
               <BoxIcon className="w-5 h-5" />
@@ -463,16 +597,6 @@ export function BluebeamShell({ children, onOpenPdf }: BluebeamShellProps) {
 
           {/* Push remaining buttons to the right */}
           <div className="flex-1"></div>
-
-          {/* View Operations Group */}
-          <div className="flex items-center gap-2 border-l-2 border-[#404040] pl-4">
-            <button className="p-1 hover:bg-[#404040] rounded" title="Zoom">
-              <ZoomInIcon className="w-5 h-5" />
-            </button>
-            <button className="p-1 hover:bg-[#404040] rounded" title="Grid">
-              <LayoutGridIcon className="w-5 h-5" />
-            </button>
-          </div>
         </div>
       </div>
 
@@ -492,7 +616,24 @@ export function BluebeamShell({ children, onOpenPdf }: BluebeamShellProps) {
           
           {/* Bottom Bar */}
           <div className="h-8 border-t border-[#404040] flex items-center justify-between px-4 bg-[#2B2B2B] shrink-0">
-            {/* Left side - Navigation */}
+            {/* Left side - View Controls */}
+            <div className="flex items-center gap-2">
+              <button className="p-1 hover:bg-[#404040] rounded" title="Split Vertically">
+                <SplitSquareVerticalIcon className="w-4 h-4" />
+              </button>
+              <button className="p-1 hover:bg-[#404040] rounded" title="Split Horizontally">
+                <SplitSquareHorizontalIcon className="w-4 h-4" />
+              </button>
+              <button 
+                className="p-1 hover:bg-[#404040] rounded" 
+                title="Fit to Page"
+                onClick={handleZoomToFit}
+              >
+                <MaximizeIcon className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Center - Navigation */}
             <div className="flex items-center gap-2">
               <button className="p-1 hover:bg-[#404040] rounded" title="First Page">
                 <ChevronsLeftIcon className="w-4 h-4" />
@@ -500,7 +641,28 @@ export function BluebeamShell({ children, onOpenPdf }: BluebeamShellProps) {
               <button className="p-1 hover:bg-[#404040] rounded" title="Previous Page">
                 <ChevronLeftIcon className="w-4 h-4" />
               </button>
-              <span className="text-sm text-gray-400">Page 1 of 1</span>
+              <div 
+                className="relative group"
+                onMouseEnter={() => setIsEditingPage(true)}
+                onMouseLeave={() => !pageInputRef.current?.contains(document.activeElement) && setIsEditingPage(false)}
+              >
+                <div className={`flex items-center rounded px-2 py-0.5 w-[6rem] justify-center ${isEditingPage ? 'bg-[#404040]' : 'bg-transparent group-hover:bg-[#404040]'}`}>
+                  {isEditingPage ? (
+                    <input
+                      ref={pageInputRef}
+                      type="text"
+                      value={`${tempPageValue} of ${totalPages}`}
+                      onChange={handlePageInputChange}
+                      onBlur={handlePageInputBlur}
+                      onKeyDown={handlePageInputKeyDown}
+                      className="w-full bg-transparent text-white text-sm focus:outline-none text-center"
+                      autoFocus
+                    />
+                  ) : (
+                    <span className="text-sm text-white text-center w-full group-hover:text-gray-400">{currentPage} of {totalPages}</span>
+                  )}
+                </div>
+              </div>
               <button className="p-1 hover:bg-[#404040] rounded" title="Next Page">
                 <ChevronRightIcon className="w-4 h-4" />
               </button>
@@ -509,92 +671,86 @@ export function BluebeamShell({ children, onOpenPdf }: BluebeamShellProps) {
               </button>
             </div>
 
-            {/* Center - Zoom and View */}
+            {/* Right side - Scale and Size */}
             <div className="flex items-center gap-2">
-              <button className="p-1 hover:bg-[#404040] rounded" title="Zoom Out">
-                <ZoomOutIcon className="w-4 h-4" />
+              <span className="text-sm text-gray-400">1 in : 20 ft</span>
+              <button 
+                className="p-1 hover:bg-[#404040] rounded" 
+                title="Zoom Out"
+                onClick={handleZoomOut}
+              >
+                <MinusIcon className="w-4 h-4" />
               </button>
-              <span className="text-sm text-gray-400">100%</span>
-              <button className="p-1 hover:bg-[#404040] rounded" title="Zoom In">
-                <ZoomInIcon className="w-4 h-4" />
+              <div 
+                className="relative group"
+                onMouseEnter={() => setIsEditingZoom(true)}
+                onMouseLeave={() => !zoomInputRef.current?.contains(document.activeElement) && setIsEditingZoom(false)}
+              >
+                <div className={`flex items-center rounded px-2 py-0.5 min-w-[3.5rem] justify-end ${isEditingZoom ? 'bg-[#404040]' : 'bg-transparent group-hover:bg-[#404040]'}`}>
+                  {isEditingZoom ? (
+                    <input
+                      ref={zoomInputRef}
+                      type="text"
+                      value={tempZoomValue}
+                      onChange={handleZoomInputChange}
+                      onBlur={handleZoomInputBlur}
+                      onKeyDown={handleZoomInputKeyDown}
+                      className="w-8 bg-transparent text-white text-sm focus:outline-none text-right"
+                      autoFocus
+                    />
+                  ) : (
+                    <span className="text-sm text-white text-right w-8 group-hover:text-gray-400">{zoomLevel}</span>
+                  )}
+                  <span className={`text-sm ml-1 ${isEditingZoom ? 'text-white' : 'text-white group-hover:text-gray-400'}`}>%</span>
+                </div>
+              </div>
+              <button 
+                className="p-1 hover:bg-[#404040] rounded" 
+                title="Zoom In"
+                onClick={handleZoomIn}
+              >
+                <PlusIcon className="w-4 h-4" />
               </button>
-              <button className="p-1 hover:bg-[#404040] rounded" title="Fit to Page">
-                <MaximizeIcon className="w-4 h-4" />
-              </button>
-              <button className="p-1 hover:bg-[#404040] rounded" title="Actual Size">
-                <MinimizeIcon className="w-4 h-4" />
-              </button>
-            </div>
-
-            {/* Right side - Status and Tools */}
-            <div className="flex items-center gap-2">
-              <button className="p-1 hover:bg-[#404040] rounded" title="Settings">
-                <SettingsIcon className="w-4 h-4" />
-              </button>
-              <button className="p-1 hover:bg-[#404040] rounded" title="Help">
-                <HelpCircleIcon className="w-4 h-4" />
-              </button>
-              <button className="p-1 hover:bg-[#404040] rounded" title="Search">
-                <SearchIcon className="w-4 h-4" />
-              </button>
-              <button className="p-1 hover:bg-[#404040] rounded" title="Comments">
-                <MessageSquareIcon className="w-4 h-4" />
-              </button>
-              <button className="p-1 hover:bg-[#404040] rounded" title="Notifications">
-                <BellIcon className="w-4 h-4" />
-              </button>
-              <button className="p-1 hover:bg-[#404040] rounded" title="User">
-                <UserIcon className="w-4 h-4" />
-              </button>
+              <span className="text-sm text-gray-400">24" x 36"</span>
             </div>
           </div>
         </div>
 
-        {/* Right Toolbar - Initially Hidden */}
+        {/* Right Toolbar */}
         <div className="w-12 bg-[#333333] border-l border-[#404040] hidden lg:block shrink-0">
-          <div className="flex flex-col items-center gap-1 p-1">
-            <button className="p-1 hover:bg-[#404040] rounded" title="Previous Page">
-              <ChevronUpIcon className="w-5 h-5" />
-            </button>
-            <button className="p-1 hover:bg-[#404040] rounded" title="Next Page">
-              <ChevronDownIcon className="w-5 h-5" />
-            </button>
-            <button className="p-1 hover:bg-[#404040] rounded" title="First Page">
-              <ChevronsLeftIcon className="w-5 h-5" />
-            </button>
-            <button className="p-1 hover:bg-[#404040] rounded" title="Last Page">
-              <ChevronsRightIcon className="w-5 h-5" />
-            </button>
-            <button className="p-1 hover:bg-[#404040] rounded" title="Zoom Out">
-              <ZoomOutIcon className="w-5 h-5" />
-            </button>
-            <button className="p-1 hover:bg-[#404040] rounded" title="Zoom In">
-              <ZoomInIcon className="w-5 h-5" />
-            </button>
-            <button className="p-1 hover:bg-[#404040] rounded" title="Fit to Page">
-              <MaximizeIcon className="w-5 h-5" />
-            </button>
-            <button className="p-1 hover:bg-[#404040] rounded" title="Actual Size">
-              <MinimizeIcon className="w-5 h-5" />
-            </button>
-            <button className="p-1 hover:bg-[#404040] rounded" title="Settings">
-              <SettingsIcon className="w-5 h-5" />
-            </button>
-            <button className="p-1 hover:bg-[#404040] rounded" title="Help">
-              <HelpCircleIcon className="w-5 h-5" />
-            </button>
-            <button className="p-1 hover:bg-[#404040] rounded" title="Search">
-              <SearchIcon className="w-5 h-5" />
-            </button>
-            <button className="p-1 hover:bg-[#404040] rounded" title="Comments">
-              <MessageSquareIcon className="w-5 h-5" />
-            </button>
-            <button className="p-1 hover:bg-[#404040] rounded" title="Notifications">
-              <BellIcon className="w-5 h-5" />
-            </button>
-            <button className="p-1 hover:bg-[#404040] rounded" title="User">
-              <UserIcon className="w-5 h-5" />
-            </button>
+          <div className="flex flex-col h-full">
+            <div className="flex flex-col items-center gap-1 p-1">
+              <button className="p-1 hover:bg-[#404040] rounded" title="Settings">
+                <SettingsIcon className="w-5 h-5" />
+              </button>
+              <button className="p-1 hover:bg-[#404040] rounded" title="Ruler">
+                <RulerIcon className="w-5 h-5" />
+              </button>
+              <button className="p-1 hover:bg-[#404040] rounded" title="Location">
+                <FileTextIcon className="w-5 h-5" />
+              </button>
+              <button className="p-1 hover:bg-[#404040] rounded" title="Layout">
+                <LayoutGridIcon className="w-5 h-5" />
+              </button>
+              <button className="p-1 hover:bg-[#404040] rounded" title="Search">
+                <SearchIcon className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="flex-1"></div>
+            <div className="flex flex-col items-center gap-1 p-1 border-t border-[#404040]">
+              <button className="p-1 text-gray-500 cursor-not-allowed" title="AI Assistant (Inactive)">
+                <SparklesIcon className="w-5 h-5" />
+              </button>
+              <button className="p-1 text-gray-500 cursor-not-allowed" title="Support (Inactive)">
+                <HelpCircleIcon className="w-5 h-5" />
+              </button>
+              <button className="p-1 text-gray-500 cursor-not-allowed" title="Messages (Inactive)">
+                <MessageSquareIcon className="w-5 h-5" />
+              </button>
+              <button className="p-1 text-gray-500 cursor-not-allowed" title="Debugger (Inactive)">
+                <BugIcon className="w-5 h-5" />
+              </button>
+            </div>
           </div>
         </div>
       </div>
