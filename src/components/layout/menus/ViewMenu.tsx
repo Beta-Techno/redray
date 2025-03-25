@@ -50,71 +50,36 @@ export function ViewMenu() {
   return (
     <MenubarMenu>
       <MenubarTrigger>View</MenubarTrigger>
-      <MenubarContent className="bg-[#333333] text-white border-[#404040] min-w-[280px]">
-        <MenubarItem onClick={handleFitToPage} className="flex items-center gap-2">
-          Fit Page
-          <MenubarShortcut>⌘9</MenubarShortcut>
-        </MenubarItem>
-
-        <MenubarItem onClick={handleFitToWidth} className="flex items-center gap-2">
-          Fit Width
-          <MenubarShortcut>⌘0</MenubarShortcut>
-        </MenubarItem>
-
-        <MenubarItem onClick={() => handleZoom(1)} className="flex items-center gap-2">
-          Actual Size
-          <MenubarShortcut>⌘8</MenubarShortcut>
-        </MenubarItem>
-
-        <MenubarSub>
-          <MenubarSubTrigger className="flex items-center gap-2">
-            Zoom Level
-          </MenubarSubTrigger>
-          <MenubarSubContent className="bg-[#333333] text-white border-[#404040]">
-            <MenubarItem onClick={() => handleZoom(0.25)} className="flex items-center gap-2">
-              25%
-            </MenubarItem>
-            <MenubarItem onClick={() => handleZoom(0.5)} className="flex items-center gap-2">
-              50%
-            </MenubarItem>
-            <MenubarItem onClick={() => handleZoom(0.75)} className="flex items-center gap-2">
-              75%
-            </MenubarItem>
-            <MenubarItem onClick={() => handleZoom(1)} className="flex items-center gap-2">
-              100%
-            </MenubarItem>
-            <MenubarItem onClick={() => handleZoom(1.25)} className="flex items-center gap-2">
-              125%
-            </MenubarItem>
-            <MenubarItem onClick={() => handleZoom(1.5)} className="flex items-center gap-2">
-              150%
-            </MenubarItem>
-            <MenubarItem onClick={() => handleZoom(2)} className="flex items-center gap-2">
-              200%
-            </MenubarItem>
-            <MenubarItem onClick={() => handleZoom(3)} className="flex items-center gap-2">
-              300%
-            </MenubarItem>
-            <MenubarItem onClick={() => handleZoom(4)} className="flex items-center gap-2">
-              400%
-            </MenubarItem>
-          </MenubarSubContent>
-        </MenubarSub>
-
-        <MenubarSeparator className="bg-[#404040]" />
-
+      <MenubarContent className="bg-popover text-popover-foreground border-border min-w-[280px]">
         <MenubarItem className="flex items-center gap-2">
           Single Page
+          <MenubarShortcut>⌘1</MenubarShortcut>
+        </MenubarItem>
+
+        <MenubarItem className="flex items-center gap-2">
+          Continuous
+          <MenubarShortcut>⌘2</MenubarShortcut>
+        </MenubarItem>
+
+        <MenubarItem className="flex items-center gap-2">
+          Continuous Facing
+          <MenubarShortcut>⌘3</MenubarShortcut>
+        </MenubarItem>
+
+        <MenubarItem className="flex items-center gap-2">
+          Continuous Facing Cover
           <MenubarShortcut>⌘4</MenubarShortcut>
         </MenubarItem>
 
+        <MenubarSeparator />
+
         <MenubarItem className="flex items-center gap-2">
-          Continuous Pages
+          Side-by-Side
           <MenubarShortcut>⌘5</MenubarShortcut>
         </MenubarItem>
 
         <MenubarItem className="flex items-center gap-2">
-          Side-by-Side
+          Continuous Side-by-Side
           <MenubarShortcut>⌘6</MenubarShortcut>
         </MenubarItem>
 
@@ -127,13 +92,13 @@ export function ViewMenu() {
           Show Cover Page in Side-by-Side
         </MenubarItem>
 
-        <MenubarSeparator className="bg-[#404040]" />
+        <MenubarSeparator />
 
         <MenubarSub>
           <MenubarSubTrigger className="flex items-center gap-2">
             Rotate View
           </MenubarSubTrigger>
-          <MenubarSubContent className="bg-[#333333] text-white border-[#404040]">
+          <MenubarSubContent className="bg-popover text-popover-foreground border-border">
             {/* Rotate view options would go here */}
           </MenubarSubContent>
         </MenubarSub>
@@ -148,27 +113,27 @@ export function ViewMenu() {
           <MenubarShortcut>⌘H</MenubarShortcut>
         </MenubarItem>
 
-        <MenubarItem disabled className="text-gray-500 flex items-center gap-2">
+        <MenubarItem disabled className="text-muted-foreground flex items-center gap-2">
           Toggle Split
           <MenubarShortcut>⌘I</MenubarShortcut>
         </MenubarItem>
 
-        <MenubarItem disabled className="text-gray-500 flex items-center gap-2">
+        <MenubarItem disabled className="text-muted-foreground flex items-center gap-2">
           Switch
           <MenubarShortcut>⌘↑</MenubarShortcut>
         </MenubarItem>
 
-        <MenubarItem disabled className="text-gray-500 flex items-center gap-2">
+        <MenubarItem disabled className="text-muted-foreground flex items-center gap-2">
           Balance
           <MenubarShortcut>⇧F12</MenubarShortcut>
         </MenubarItem>
 
-        <MenubarItem disabled className="text-gray-500 flex items-center gap-2">
+        <MenubarItem disabled className="text-muted-foreground flex items-center gap-2">
           Unsplit
           <MenubarShortcut>⌘⇧2</MenubarShortcut>
         </MenubarItem>
 
-        <MenubarSeparator className="bg-[#404040]" />
+        <MenubarSeparator />
 
         <MenubarItem className="flex items-center gap-2">
           Synchronize Document
@@ -178,7 +143,7 @@ export function ViewMenu() {
           Synchronize Page
         </MenubarItem>
 
-        <MenubarSeparator className="bg-[#404040]" />
+        <MenubarSeparator />
 
         <MenubarItem className="flex items-center gap-2">
           Rulers
@@ -209,13 +174,13 @@ export function ViewMenu() {
           <MenubarShortcut>⌘⇧F7</MenubarShortcut>
         </MenubarItem>
 
-        <MenubarSeparator className="bg-[#404040]" />
+        <MenubarSeparator />
 
         <MenubarSub>
           <MenubarSubTrigger className="flex items-center gap-2">
             Dimmer
           </MenubarSubTrigger>
-          <MenubarSubContent className="bg-[#333333] text-white border-[#404040]">
+          <MenubarSubContent className="bg-popover text-popover-foreground border-border">
             {/* Dimmer options would go here */}
           </MenubarSubContent>
         </MenubarSub>

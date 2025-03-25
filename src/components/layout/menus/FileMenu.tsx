@@ -12,7 +12,7 @@ export function RedRayMenu() {
   return (
     <MenubarMenu>
       <MenubarTrigger className="font-semibold">RedRay</MenubarTrigger>
-      <MenubarContent className="bg-[#333333] text-white border-[#404040] min-w-[280px]">
+      <MenubarContent className="bg-popover text-popover-foreground border-border min-w-[280px]">
         <MenubarItem className="flex items-center gap-2">
           <UserIcon className="w-4 h-4" />
           About
@@ -83,7 +83,7 @@ export function FileMenu({ onOpenPdf }: FileMenuProps) {
   return (
     <MenubarMenu>
       <MenubarTrigger>File</MenubarTrigger>
-      <MenubarContent className="bg-[#333333] text-white border-[#404040] min-w-[280px]">
+      <MenubarContent className="bg-popover text-popover-foreground border-border min-w-[280px]">
         <MenubarItem className="flex items-center gap-2">
           <FileIcon className="w-4 h-4" />
           New PDF...
@@ -94,7 +94,7 @@ export function FileMenu({ onOpenPdf }: FileMenuProps) {
             <FileIcon className="w-4 h-4" />
             New PDF from Template...
           </MenubarSubTrigger>
-          <MenubarSubContent className="bg-[#333333] text-white border-[#404040]">
+          <MenubarSubContent className="bg-popover text-popover-foreground border-border">
             {/* Template submenu items would go here */}
           </MenubarSubContent>
         </MenubarSub>
@@ -110,7 +110,7 @@ export function FileMenu({ onOpenPdf }: FileMenuProps) {
             <FolderIcon className="w-4 h-4" />
             Open Recent
           </MenubarSubTrigger>
-          <MenubarSubContent className="bg-[#333333] text-white border-[#404040]">
+          <MenubarSubContent className="bg-popover text-popover-foreground border-border">
             {/* Recent files would go here */}
           </MenubarSubContent>
         </MenubarSub>
@@ -136,7 +136,7 @@ export function FileMenu({ onOpenPdf }: FileMenuProps) {
             <LayersIcon className="w-4 h-4" />
             Create
           </MenubarSubTrigger>
-          <MenubarSubContent className="bg-[#333333] text-white border-[#404040]">
+          <MenubarSubContent className="bg-popover text-popover-foreground border-border">
             {/* Create submenu items would go here */}
           </MenubarSubContent>
         </MenubarSub>

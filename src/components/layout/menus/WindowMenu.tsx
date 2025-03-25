@@ -4,7 +4,7 @@ export function WindowMenu() {
   return (
     <MenubarMenu>
       <MenubarTrigger>Window</MenubarTrigger>
-      <MenubarContent className="bg-[#333333] text-white border-[#404040] min-w-[280px]">
+      <MenubarContent className="bg-popover text-popover-foreground border-border min-w-[280px]">
         <MenubarItem className="flex items-center gap-2">
           Minimize
           <MenubarShortcut>⌘M</MenubarShortcut>
@@ -14,24 +14,24 @@ export function WindowMenu() {
           Zoom
         </MenubarItem>
 
-        <MenubarSeparator className="bg-[#404040]" />
+        <MenubarSeparator />
 
         <MenubarSub>
           <MenubarSubTrigger className="flex items-center gap-2">
             Panels
           </MenubarSubTrigger>
-          <MenubarSubContent className="bg-[#333333] text-white border-[#404040]">
+          <MenubarSubContent className="bg-popover text-popover-foreground border-border">
             <MenubarItem>Properties</MenubarItem>
             <MenubarItem>Thumbnails</MenubarItem>
             <MenubarItem>Bookmarks</MenubarItem>
             <MenubarItem>Attachments</MenubarItem>
             <MenubarItem>Layers</MenubarItem>
-            <MenubarSeparator className="bg-[#404040]" />
+            <MenubarSeparator />
             <MenubarItem>Comments</MenubarItem>
             <MenubarItem>Tool Chest</MenubarItem>
             <MenubarItem>Measurements</MenubarItem>
             <MenubarItem>Sets</MenubarItem>
-            <MenubarSeparator className="bg-[#404040]" />
+            <MenubarSeparator />
             <MenubarItem>Search</MenubarItem>
           </MenubarSubContent>
         </MenubarSub>
@@ -40,10 +40,10 @@ export function WindowMenu() {
           <MenubarSubTrigger className="flex items-center gap-2">
             Toolbars
           </MenubarSubTrigger>
-          <MenubarSubContent className="bg-[#333333] text-white border-[#404040]">
+          <MenubarSubContent className="bg-popover text-popover-foreground border-border">
             <MenubarItem>Properties Bar</MenubarItem>
             <MenubarItem>File Access Bar</MenubarItem>
-            <MenubarSeparator className="bg-[#404040]" />
+            <MenubarSeparator />
             <MenubarItem>Basic Tools</MenubarItem>
             <MenubarItem>Insert</MenubarItem>
             <MenubarItem>Markup</MenubarItem>
@@ -51,7 +51,7 @@ export function WindowMenu() {
           </MenubarSubContent>
         </MenubarSub>
 
-        <MenubarSeparator className="bg-[#404040]" />
+        <MenubarSeparator />
 
         <MenubarItem className="flex items-center gap-2">
           Reset Workspace
@@ -61,13 +61,13 @@ export function WindowMenu() {
           Save Workspace...
         </MenubarItem>
 
-        <MenubarSeparator className="bg-[#404040]" />
+        <MenubarSeparator />
 
         <MenubarItem className="flex items-center gap-2">
           Bring All to Front
         </MenubarItem>
 
-        <MenubarSeparator className="bg-[#404040]" />
+        <MenubarSeparator />
 
         <MenubarItem className="flex items-center gap-2">
           Document 1.pdf

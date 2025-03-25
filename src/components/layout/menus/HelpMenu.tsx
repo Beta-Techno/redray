@@ -4,7 +4,7 @@ export function HelpMenu() {
   return (
     <MenubarMenu>
       <MenubarTrigger>Help</MenubarTrigger>
-      <MenubarContent className="bg-[#333333] text-white border-[#404040] min-w-[280px]">
+      <MenubarContent className="min-w-[280px] bg-popover text-popover-foreground border-border">
         <MenubarItem className="flex items-center gap-2">
           Red Ray Help
           <MenubarShortcut>F1</MenubarShortcut>
@@ -18,7 +18,7 @@ export function HelpMenu() {
           Tutorials
         </MenubarItem>
 
-        <MenubarSeparator className="bg-[#404040]" />
+        <MenubarSeparator />
 
         <MenubarItem className="flex items-center gap-2">
           Knowledge Base
@@ -32,7 +32,7 @@ export function HelpMenu() {
           Remote Support
         </MenubarItem>
 
-        <MenubarSeparator className="bg-[#404040]" />
+        <MenubarSeparator />
 
         <MenubarItem className="flex items-center gap-2">
           Check for Updates...
@@ -42,7 +42,7 @@ export function HelpMenu() {
           Register...
         </MenubarItem>
 
-        <MenubarSeparator className="bg-[#404040]" />
+        <MenubarSeparator />
 
         <MenubarItem className="flex items-center gap-2">
           About Red Ray Revu

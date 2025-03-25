@@ -4,7 +4,7 @@ export function EditMenu() {
   return (
     <MenubarMenu>
       <MenubarTrigger>Edit</MenubarTrigger>
-      <MenubarContent className="bg-[#333333] text-white border-[#404040] min-w-[280px]">
+      <MenubarContent className="bg-popover text-popover-foreground border-border min-w-[280px]">
         <MenubarItem className="flex items-center gap-2">
           Undo
           <MenubarShortcut>⌘Z</MenubarShortcut>
@@ -19,7 +19,7 @@ export function EditMenu() {
           Undo History
         </MenubarItem>
 
-        <MenubarSeparator className="bg-[#404040]" />
+        <MenubarSeparator />
 
         <MenubarItem className="flex items-center gap-2">
           Cut
@@ -41,7 +41,7 @@ export function EditMenu() {
           <MenubarShortcut>⌘⇧V</MenubarShortcut>
         </MenubarItem>
 
-        <MenubarSeparator className="bg-[#404040]" />
+        <MenubarSeparator />
 
         <MenubarItem className="flex items-center gap-2">
           Delete
@@ -78,7 +78,7 @@ export function EditMenu() {
           <MenubarShortcut>⌘⇧C</MenubarShortcut>
         </MenubarItem>
 
-        <MenubarSeparator className="bg-[#404040]" />
+        <MenubarSeparator />
 
         <MenubarSub>
           <MenubarSubTrigger className="flex items-center gap-2">

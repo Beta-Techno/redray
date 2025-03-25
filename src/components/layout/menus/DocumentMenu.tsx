@@ -4,12 +4,12 @@ export function DocumentMenu() {
   return (
     <MenubarMenu>
       <MenubarTrigger>Document</MenubarTrigger>
-      <MenubarContent className="bg-[#333333] text-white border-[#404040] min-w-[280px]">
+      <MenubarContent className="bg-popover text-popover-foreground border-border min-w-[280px]">
         <MenubarSub>
           <MenubarSubTrigger className="flex items-center gap-2">
             Insert Pages
           </MenubarSubTrigger>
-          <MenubarSubContent className="bg-[#333333] text-white border-[#404040]">
+          <MenubarSubContent className="bg-popover text-popover-foreground border-border">
             <MenubarItem>From File...</MenubarItem>
             <MenubarItem>From Scanner...</MenubarItem>
             <MenubarItem>Blank Pages...</MenubarItem>
@@ -28,13 +28,13 @@ export function DocumentMenu() {
           Crop Pages...
         </MenubarItem>
 
-        <MenubarSeparator className="bg-[#404040]" />
+        <MenubarSeparator />
 
         <MenubarSub>
           <MenubarSubTrigger className="flex items-center gap-2">
             Header & Footer
           </MenubarSubTrigger>
-          <MenubarSubContent className="bg-[#333333] text-white border-[#404040]">
+          <MenubarSubContent className="bg-popover text-popover-foreground border-border">
             <MenubarItem>Add...</MenubarItem>
             <MenubarItem>Update</MenubarItem>
             <MenubarItem>Remove</MenubarItem>
@@ -45,14 +45,14 @@ export function DocumentMenu() {
           <MenubarSubTrigger className="flex items-center gap-2">
             Bates Numbering
           </MenubarSubTrigger>
-          <MenubarSubContent className="bg-[#333333] text-white border-[#404040]">
+          <MenubarSubContent className="bg-popover text-popover-foreground border-border">
             <MenubarItem>Add...</MenubarItem>
             <MenubarItem>Update</MenubarItem>
             <MenubarItem>Remove</MenubarItem>
           </MenubarSubContent>
         </MenubarSub>
 
-        <MenubarSeparator className="bg-[#404040]" />
+        <MenubarSeparator />
 
         <MenubarItem className="flex items-center gap-2">
           OCR Pages...
@@ -62,21 +62,21 @@ export function DocumentMenu() {
           Optimize...
         </MenubarItem>
 
-        <MenubarSeparator className="bg-[#404040]" />
+        <MenubarSeparator />
 
         <MenubarSub>
           <MenubarSubTrigger className="flex items-center gap-2">
             Processing
           </MenubarSubTrigger>
-          <MenubarSubContent className="bg-[#333333] text-white border-[#404040]">
+          <MenubarSubContent className="bg-popover text-popover-foreground border-border">
             <MenubarItem>Flatten Markups</MenubarItem>
             <MenubarItem>Flatten Form Fields</MenubarItem>
-            <MenubarSeparator className="bg-[#404040]" />
+            <MenubarSeparator />
             <MenubarItem>Rasterize Pages...</MenubarItem>
           </MenubarSubContent>
         </MenubarSub>
 
-        <MenubarSeparator className="bg-[#404040]" />
+        <MenubarSeparator />
 
         <MenubarItem className="flex items-center gap-2">
           Document Info...
@@ -87,9 +87,9 @@ export function DocumentMenu() {
           <MenubarSubTrigger className="flex items-center gap-2">
             Security
           </MenubarSubTrigger>
-          <MenubarSubContent className="bg-[#333333] text-white border-[#404040]">
+          <MenubarSubContent className="bg-popover text-popover-foreground border-border">
             <MenubarItem>Show Security Properties...</MenubarItem>
-            <MenubarSeparator className="bg-[#404040]" />
+            <MenubarSeparator />
             <MenubarItem>Add Security...</MenubarItem>
             <MenubarItem>Remove Security</MenubarItem>
           </MenubarSubContent>

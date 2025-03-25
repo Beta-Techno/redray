@@ -4,12 +4,12 @@ export function ToolsMenu() {
   return (
     <MenubarMenu>
       <MenubarTrigger>Tools</MenubarTrigger>
-      <MenubarContent className="bg-[#333333] text-white border-[#404040] min-w-[280px]">
+      <MenubarContent className="bg-popover text-popover-foreground border-border min-w-[280px]">
         <MenubarSub>
           <MenubarSubTrigger className="flex items-center gap-2">
             Basic Tools
           </MenubarSubTrigger>
-          <MenubarSubContent className="bg-[#333333] text-white border-[#404040]">
+          <MenubarSubContent className="bg-popover text-popover-foreground border-border">
             <MenubarItem>Hand Tool</MenubarItem>
             <MenubarItem>Select Text</MenubarItem>
             <MenubarItem>Select Image</MenubarItem>
@@ -21,17 +21,17 @@ export function ToolsMenu() {
           <MenubarSubTrigger className="flex items-center gap-2">
             Markup Tools
           </MenubarSubTrigger>
-          <MenubarSubContent className="bg-[#333333] text-white border-[#404040]">
+          <MenubarSubContent className="bg-popover text-popover-foreground border-border">
             <MenubarItem>Text Box</MenubarItem>
             <MenubarItem>Callout</MenubarItem>
             <MenubarItem>Typewriter</MenubarItem>
-            <MenubarSeparator className="bg-[#404040]" />
+            <MenubarSeparator />
             <MenubarItem>Rectangle</MenubarItem>
             <MenubarItem>Ellipse</MenubarItem>
             <MenubarItem>Line</MenubarItem>
             <MenubarItem>Polyline</MenubarItem>
             <MenubarItem>Cloud</MenubarItem>
-            <MenubarSeparator className="bg-[#404040]" />
+            <MenubarSeparator />
             <MenubarItem>Highlight</MenubarItem>
             <MenubarItem>Strikeout</MenubarItem>
             <MenubarItem>Underline</MenubarItem>
@@ -42,23 +42,23 @@ export function ToolsMenu() {
           <MenubarSubTrigger className="flex items-center gap-2">
             Measure Tools
           </MenubarSubTrigger>
-          <MenubarSubContent className="bg-[#333333] text-white border-[#404040]">
+          <MenubarSubContent className="bg-popover text-popover-foreground border-border">
             <MenubarItem>Distance</MenubarItem>
             <MenubarItem>Perimeter</MenubarItem>
             <MenubarItem>Area</MenubarItem>
-            <MenubarSeparator className="bg-[#404040]" />
+            <MenubarSeparator />
             <MenubarItem>Calibrate</MenubarItem>
             <MenubarItem>Configure Scale</MenubarItem>
           </MenubarSubContent>
         </MenubarSub>
 
-        <MenubarSeparator className="bg-[#404040]" />
+        <MenubarSeparator />
 
         <MenubarSub>
           <MenubarSubTrigger className="flex items-center gap-2">
             Stamps
           </MenubarSubTrigger>
-          <MenubarSubContent className="bg-[#333333] text-white border-[#404040]">
+          <MenubarSubContent className="bg-popover text-popover-foreground border-border">
             <MenubarItem>Add Stamp</MenubarItem>
             <MenubarItem>Manage Stamps...</MenubarItem>
           </MenubarSubContent>
@@ -68,13 +68,13 @@ export function ToolsMenu() {
           Add Image...
         </MenubarItem>
 
-        <MenubarSeparator className="bg-[#404040]" />
+        <MenubarSeparator />
 
         <MenubarSub>
           <MenubarSubTrigger className="flex items-center gap-2">
             Forms
           </MenubarSubTrigger>
-          <MenubarSubContent className="bg-[#333333] text-white border-[#404040]">
+          <MenubarSubContent className="bg-popover text-popover-foreground border-border">
             <MenubarItem>Text Field</MenubarItem>
             <MenubarItem>Checkbox</MenubarItem>
             <MenubarItem>Radio Button</MenubarItem>
@@ -82,7 +82,7 @@ export function ToolsMenu() {
             <MenubarItem>Combo Box</MenubarItem>
             <MenubarItem>Button</MenubarItem>
             <MenubarItem>Digital Signature</MenubarItem>
-            <MenubarSeparator className="bg-[#404040]" />
+            <MenubarSeparator />
             <MenubarItem>Form Field Recognition</MenubarItem>
             <MenubarItem>Reset Form</MenubarItem>
             <MenubarItem>Import Form Data...</MenubarItem>
@@ -90,7 +90,7 @@ export function ToolsMenu() {
           </MenubarSubContent>
         </MenubarSub>
 
-        <MenubarSeparator className="bg-[#404040]" />
+        <MenubarSeparator />
 
         <MenubarItem className="flex items-center gap-2">
           JavaScript Console
@@ -101,7 +101,7 @@ export function ToolsMenu() {
           <MenubarSubTrigger className="flex items-center gap-2">
             Customize
           </MenubarSubTrigger>
-          <MenubarSubContent className="bg-[#333333] text-white border-[#404040]">
+          <MenubarSubContent className="bg-popover text-popover-foreground border-border">
             <MenubarItem>Customize Toolbars...</MenubarItem>
             <MenubarItem>Customize Keyboard...</MenubarItem>
             <MenubarItem>Customize Status Bar...</MenubarItem>

@@ -89,6 +89,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { SettingsDialog } from '@/components/settings/SettingsDialog';
 
 interface RedRayShellProps {
   children: ReactNode;
@@ -135,6 +136,10 @@ export function RedRayShell({ children, onOpenPdf }: RedRayShellProps) {
   const [isEditingPage, setIsEditingPage] = useState(false);
   const [tempPageValue, setTempPageValue] = useState('1');
   const pageInputRef = useRef<HTMLInputElement>(null);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [deleteButtonRef, setDeleteButtonRef] = useState<HTMLButtonElement | null>(null);
+  const [undoButtonRef, setUndoButtonRef] = useState<HTMLButtonElement | null>(null);
+  const [redoButtonRef, setRedoButtonRef] = useState<HTMLButtonElement | null>(null);
 
   // Add a function to check if editor is ready
   const isEditorReady = () => {
@@ -200,6 +205,7 @@ export function RedRayShell({ children, onOpenPdf }: RedRayShellProps) {
   };
 
   const handleZoomInputBlur = () => {
+    setIsEditingZoom(false);  // Always set to false first
     if (!isEditorReady()) return;
     const value = parseInt(tempZoomValue);
     if (!isNaN(value) && value > 0) {
@@ -213,7 +219,6 @@ export function RedRayShell({ children, onOpenPdf }: RedRayShellProps) {
     } else {
       setTempZoomValue(zoomLevel.toString());
     }
-    setIsEditingZoom(false);
   };
 
   const handleZoomInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -321,12 +326,28 @@ export function RedRayShell({ children, onOpenPdf }: RedRayShellProps) {
     }
   };
 
+  // Add effect to reset button styles when states change
+  useEffect(() => {
+    if (deleteButtonRef && !hasSelectedShapes) {
+      deleteButtonRef.style.backgroundColor = "transparent";
+      deleteButtonRef.style.color = "hsl(var(--foreground))";
+    }
+    if (undoButtonRef && !canUndo) {
+      undoButtonRef.style.backgroundColor = "transparent";
+      undoButtonRef.style.color = "hsl(var(--foreground))";
+    }
+    if (redoButtonRef && !canRedo) {
+      redoButtonRef.style.backgroundColor = "transparent";
+      redoButtonRef.style.color = "hsl(var(--foreground))";
+    }
+  }, [hasSelectedShapes, canUndo, canRedo]);
+
   return (
-    <div className="flex flex-col h-screen bg-[#2B2B2B] text-white">
+    <div className="flex flex-col h-screen bg-background text-foreground">
       {/* Header Section */}
       <div className="shrink-0">
         {/* Top Menubar */}
-        <div className="h-8 border-b border-[#404040] flex items-center bg-[#333333]">
+        <div className="h-8 border-b border-border flex items-center bg-header">
           {/* Left side - Menu */}
           <div className="flex-none">
             <Menubar className="border-none bg-transparent flex-1">
@@ -343,158 +364,506 @@ export function RedRayShell({ children, onOpenPdf }: RedRayShellProps) {
 
           {/* Center - Search Bar */}
           <div className="flex-1 flex justify-center items-center">
-            <div className="w-64 bg-[#2B2B2B] rounded px-2 py-0.5 flex items-center">
-              <SearchIcon className="w-3 h-3 text-gray-400 shrink-0" />
-              <span className="text-xs text-gray-400 flex-1 text-center">Search</span>
+            <div className="w-64 relative flex items-center">
+              <SearchIcon className="w-3 h-3 text-muted-foreground absolute left-2" />
+              <input
+                type="text"
+                placeholder="Search"
+                className="w-full bg-background/50 border border-input hover:border-accent focus:border-accent rounded px-7 py-0.5 text-xs outline-none text-left placeholder:text-center"
+              />
             </div>
           </div>
 
           {/* Right side - Panel Indicators and Account Menu */}
-          <div className="flex-none flex items-center gap-2 border-l-2 border-[#404040] pl-4">
-            <button className="p-1 hover:bg-[#404040] rounded" title="Toggle Left Panel">
+          <div className="flex-none flex items-center gap-2 pl-4">
+            <button 
+              className="p-1 rounded" 
+              title="Toggle Left Panel"
+              style={{
+                backgroundColor: "transparent",
+                color: "hsl(var(--foreground))",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "hsl(var(--accent))";
+                e.currentTarget.style.color = "hsl(var(--accent-foreground))";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = "hsl(var(--foreground))";
+              }}
+            >
               <PanelLeftIcon className="w-3 h-3" />
             </button>
-            <button className="p-1 hover:bg-[#404040] rounded" title="Toggle Bottom Panel">
+            <button 
+              className="p-1 rounded" 
+              title="Toggle Bottom Panel"
+              style={{
+                backgroundColor: "transparent",
+                color: "hsl(var(--foreground))",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "hsl(var(--accent))";
+                e.currentTarget.style.color = "hsl(var(--accent-foreground))";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = "hsl(var(--foreground))";
+              }}
+            >
               <PanelBottomIcon className="w-3 h-3" />
             </button>
-            <button className="p-1 hover:bg-[#404040] rounded" title="Toggle Right Panel">
+            <button 
+              className="p-1 rounded" 
+              title="Toggle Right Panel"
+              style={{
+                backgroundColor: "transparent",
+                color: "hsl(var(--foreground))",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "hsl(var(--accent))";
+                e.currentTarget.style.color = "hsl(var(--accent-foreground))";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = "hsl(var(--foreground))";
+              }}
+            >
               <PanelRightIcon className="w-3 h-3" />
             </button>
-            <div className="w-px h-4 bg-[#404040] mx-2"></div>
-            <button className="p-1 hover:bg-[#404040] rounded" title="Notifications">
-              <BellIcon className="w-4 h-4" />
-            </button>
-            <button className="p-1 hover:bg-[#404040] rounded" title="Account">
-              <UserIcon className="w-4 h-4" />
-            </button>
+            <div className="flex items-center gap-2 border-l border-border pl-4 pr-4">
+              <button 
+                className="p-1 rounded" 
+                title="Notifications"
+                style={{
+                  backgroundColor: "transparent",
+                  color: "hsl(var(--foreground))",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = "hsl(var(--accent))";
+                  e.currentTarget.style.color = "hsl(var(--accent-foreground))";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                  e.currentTarget.style.color = "hsl(var(--foreground))";
+                }}
+              >
+                <BellIcon className="w-4 h-4" />
+              </button>
+              <button 
+                className="p-1 rounded" 
+                title="Account Settings"
+                onClick={() => setIsSettingsOpen(true)}
+                style={{
+                  backgroundColor: "transparent",
+                  color: "hsl(var(--foreground))",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = "hsl(var(--accent))";
+                  e.currentTarget.style.color = "hsl(var(--accent-foreground))";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                  e.currentTarget.style.color = "hsl(var(--foreground))";
+                }}
+              >
+                <UserIcon className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         </div>
 
         {/* Toolbar */}
-        <div className="h-10 border-b border-[#404040] flex items-center gap-4 px-4 bg-[#333333]">
+        <div className="h-10 border-b border-border flex items-center gap-4 px-4 bg-toolbar">
           {/* File Operations Group */}
-          <div className="flex items-center gap-2 border-r-2 border-[#404040] pr-4">
-            <button className="p-1 hover:bg-[#404040] rounded" title="New">
+          <div className="flex items-center gap-2 border-r-2 border-border pr-4">
+            <button 
+              className="p-2 rounded" 
+              title="New"
+              style={{
+                backgroundColor: "transparent",
+                color: "hsl(var(--foreground))",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "hsl(var(--accent))";
+                e.currentTarget.style.color = "hsl(var(--accent-foreground))";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = "hsl(var(--foreground))";
+              }}
+            >
               <FilePlusIcon className="w-5 h-5" />
             </button>
             <button 
-              className={`p-1 rounded ${isLoading ? 'text-gray-500 cursor-not-allowed' : 'hover:bg-[#404040]'}`}
+              className={`p-2 rounded ${isLoading ? 'text-muted-foreground cursor-not-allowed' : ''}`}
               onClick={handleOpenPdf}
               disabled={isLoading}
               title="Open"
+              style={{
+                backgroundColor: "transparent",
+                color: isLoading ? undefined : "hsl(var(--foreground))",
+              }}
+              onMouseEnter={(e) => {
+                if (!isLoading) {
+                  e.currentTarget.style.backgroundColor = "hsl(var(--accent))";
+                  e.currentTarget.style.color = "hsl(var(--accent-foreground))";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!isLoading) {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                  e.currentTarget.style.color = "hsl(var(--foreground))";
+                }
+              }}
             >
               <FolderOpenIcon className="w-5 h-5" />
             </button>
-            <button className="p-1 hover:bg-[#404040] rounded" title="Save">
+            <button 
+              className="p-2 rounded" 
+              title="Save"
+              style={{
+                backgroundColor: "transparent",
+                color: "hsl(var(--foreground))",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "hsl(var(--accent))";
+                e.currentTarget.style.color = "hsl(var(--accent-foreground))";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = "hsl(var(--foreground))";
+              }}
+            >
               <SaveIcon className="w-5 h-5" />
             </button>
-            <button className="p-1 hover:bg-[#404040] rounded" title="Print">
+            <button 
+              className="p-2 rounded" 
+              title="Print"
+              style={{
+                backgroundColor: "transparent",
+                color: "hsl(var(--foreground))",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "hsl(var(--accent))";
+                e.currentTarget.style.color = "hsl(var(--accent-foreground))";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = "hsl(var(--foreground))";
+              }}
+            >
               <PrinterIcon className="w-5 h-5" />
             </button>
-            <button className="p-1 hover:bg-[#404040] rounded" title="Send">
+            <button 
+              className="p-2 rounded" 
+              title="Send"
+              style={{
+                backgroundColor: "transparent",
+                color: "hsl(var(--foreground))",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "hsl(var(--accent))";
+                e.currentTarget.style.color = "hsl(var(--accent-foreground))";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = "hsl(var(--foreground))";
+              }}
+            >
               <SendIcon className="w-5 h-5" />
             </button>
           </div>
 
           {/* Edit Operations Group */}
-          <div className="flex items-center gap-2 border-r-2 border-[#404040] pr-4">
+          <div className="flex items-center gap-2 border-r-2 border-border pr-4">
             <button 
-              className={`p-1 rounded ${canUndo ? 'hover:bg-[#404040] text-white' : 'text-gray-500 cursor-not-allowed'}`}
+              className={`p-2 rounded ${!canUndo ? 'opacity-40' : ''}`}
               onClick={handleUndo}
               disabled={!canUndo}
               title="Undo"
+              ref={setUndoButtonRef}
+              style={{
+                backgroundColor: "transparent",
+                color: "hsl(var(--foreground))",
+              }}
+              onMouseEnter={(e) => {
+                if (canUndo) {
+                  e.currentTarget.style.backgroundColor = "hsl(var(--accent))";
+                  e.currentTarget.style.color = "hsl(var(--accent-foreground))";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (canUndo) {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                  e.currentTarget.style.color = "hsl(var(--foreground))";
+                }
+              }}
             >
               <Undo2Icon className="w-5 h-5" />
             </button>
             <button 
-              className={`p-1 rounded ${canRedo ? 'hover:bg-[#404040] text-white' : 'text-gray-500 cursor-not-allowed'}`}
+              className={`p-2 rounded ${!canRedo ? 'opacity-40' : ''}`}
               onClick={handleRedo}
               disabled={!canRedo}
               title="Redo"
+              ref={setRedoButtonRef}
+              style={{
+                backgroundColor: "transparent",
+                color: "hsl(var(--foreground))",
+              }}
+              onMouseEnter={(e) => {
+                if (canRedo) {
+                  e.currentTarget.style.backgroundColor = "hsl(var(--accent))";
+                  e.currentTarget.style.color = "hsl(var(--accent-foreground))";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (canRedo) {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                  e.currentTarget.style.color = "hsl(var(--foreground))";
+                }
+              }}
             >
               <Redo2Icon className="w-5 h-5" />
             </button>
             <button 
-              className={`p-1 rounded ${hasSelectedShapes ? 'hover:bg-[#404040] text-white' : 'text-gray-500 cursor-not-allowed'}`}
+              className={`p-2 rounded ${!hasSelectedShapes ? 'opacity-40' : ''}`}
               onClick={handleDuplicate}
               disabled={!hasSelectedShapes}
               title="Duplicate"
+              style={{
+                backgroundColor: "transparent",
+                color: "hsl(var(--foreground))",
+              }}
+              onMouseEnter={(e) => {
+                if (hasSelectedShapes) {
+                  e.currentTarget.style.backgroundColor = "hsl(var(--accent))";
+                  e.currentTarget.style.color = "hsl(var(--accent-foreground))";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (hasSelectedShapes) {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                  e.currentTarget.style.color = "hsl(var(--foreground))";
+                }
+              }}
             >
               <Copy className="w-5 h-5" />
             </button>
             <button 
-              className={`p-1 rounded ${hasSelectedShapes ? 'hover:bg-[#404040] text-white' : 'text-gray-500 cursor-not-allowed'}`}
+              className={`p-2 rounded ${!hasSelectedShapes ? 'opacity-40' : ''}`}
               onClick={handleDelete}
               disabled={!hasSelectedShapes}
               title="Delete"
+              ref={setDeleteButtonRef}
+              style={{
+                backgroundColor: "transparent",
+                color: "hsl(var(--foreground))",
+              }}
+              onMouseEnter={(e) => {
+                if (hasSelectedShapes) {
+                  e.currentTarget.style.backgroundColor = "hsl(var(--accent))";
+                  e.currentTarget.style.color = "hsl(var(--accent-foreground))";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (hasSelectedShapes) {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                  e.currentTarget.style.color = "hsl(var(--foreground))";
+                }
+              }}
             >
               <Trash2Icon className="w-5 h-5" />
             </button>
           </div>
 
           {/* Selection Tools Group */}
-          <div className="flex items-center gap-2 border-r-2 border-[#404040] pr-4">
+          <div className="flex items-center gap-2 border-r-2 border-border pr-4">
             <button 
-              className={`p-1 rounded ${currentTool === 'select' ? 'bg-[#0078D4]' : 'hover:bg-[#404040]'}`}
+              className={`p-2 rounded`}
               onClick={() => handleToolChange('select')}
               title="Select"
+              style={{
+                backgroundColor: currentTool === 'select' ? "hsl(var(--primary))" : "transparent",
+                color: currentTool === 'select' ? "hsl(var(--primary-foreground))" : "hsl(var(--foreground))",
+              }}
+              onMouseEnter={(e) => {
+                if (currentTool !== 'select') {
+                  e.currentTarget.style.backgroundColor = "hsl(var(--accent))";
+                  e.currentTarget.style.color = "hsl(var(--accent-foreground))";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (currentTool !== 'select') {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                  e.currentTarget.style.color = "hsl(var(--foreground))";
+                }
+              }}
             >
               <MousePointer2Icon className="w-5 h-5" />
             </button>
             <button 
-              className={`p-1 rounded ${currentTool === 'hand' ? 'bg-[#0078D4]' : 'hover:bg-[#404040]'}`}
+              className={`p-2 rounded`}
               onClick={() => handleToolChange('hand')}
               title="Hand"
+              style={{
+                backgroundColor: currentTool === 'hand' ? "hsl(var(--primary))" : "transparent",
+                color: currentTool === 'hand' ? "hsl(var(--primary-foreground))" : "hsl(var(--foreground))",
+              }}
+              onMouseEnter={(e) => {
+                if (currentTool !== 'hand') {
+                  e.currentTarget.style.backgroundColor = "hsl(var(--accent))";
+                  e.currentTarget.style.color = "hsl(var(--accent-foreground))";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (currentTool !== 'hand') {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                  e.currentTarget.style.color = "hsl(var(--foreground))";
+                }
+              }}
             >
               <HandIcon className="w-5 h-5" />
             </button>
           </div>
 
           {/* Drawing Tools Group */}
-          <div className="flex items-center gap-2 border-r-2 border-[#404040] pr-4">
+          <div className="flex items-center gap-2 border-r-2 border-border pr-4">
             <button 
-              className={`p-1 rounded ${currentTool === 'draw' ? 'bg-[#0078D4]' : 'hover:bg-[#404040]'}`}
+              className="p-2 rounded"
               onClick={() => handleToolChange('draw')}
               title="Pen"
+              style={{
+                backgroundColor: currentTool === 'draw' ? "hsl(var(--primary))" : "transparent",
+                color: currentTool === 'draw' ? "hsl(var(--primary-foreground))" : "hsl(var(--foreground))",
+              }}
+              onMouseEnter={(e) => {
+                if (currentTool !== 'draw') {
+                  e.currentTarget.style.backgroundColor = "hsl(var(--accent))";
+                  e.currentTarget.style.color = "hsl(var(--accent-foreground))";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (currentTool !== 'draw') {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                  e.currentTarget.style.color = "hsl(var(--foreground))";
+                }
+              }}
             >
               <PenIcon className="w-5 h-5" />
             </button>
             <button 
-              className={`p-1 rounded ${currentTool === 'highlight' ? 'bg-[#0078D4]' : 'hover:bg-[#404040]'}`}
+              className="p-2 rounded"
               onClick={() => handleToolChange('highlight')}
               title="Highlight"
+              style={{
+                backgroundColor: currentTool === 'highlight' ? "hsl(var(--primary))" : "transparent",
+                color: currentTool === 'highlight' ? "hsl(var(--primary-foreground))" : "hsl(var(--foreground))",
+              }}
+              onMouseEnter={(e) => {
+                if (currentTool !== 'highlight') {
+                  e.currentTarget.style.backgroundColor = "hsl(var(--accent))";
+                  e.currentTarget.style.color = "hsl(var(--accent-foreground))";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (currentTool !== 'highlight') {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                  e.currentTarget.style.color = "hsl(var(--foreground))";
+                }
+              }}
             >
               <HighlighterIcon className="w-5 h-5" />
             </button>
             <button 
-              className={`p-1 rounded ${currentTool === 'eraser' ? 'bg-[#0078D4]' : 'hover:bg-[#404040]'}`}
+              className="p-2 rounded"
               onClick={() => handleToolChange('eraser')}
               title="Eraser"
+              style={{
+                backgroundColor: currentTool === 'eraser' ? "hsl(var(--primary))" : "transparent",
+                color: currentTool === 'eraser' ? "hsl(var(--primary-foreground))" : "hsl(var(--foreground))",
+              }}
+              onMouseEnter={(e) => {
+                if (currentTool !== 'eraser') {
+                  e.currentTarget.style.backgroundColor = "hsl(var(--accent))";
+                  e.currentTarget.style.color = "hsl(var(--accent-foreground))";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (currentTool !== 'eraser') {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                  e.currentTarget.style.color = "hsl(var(--foreground))";
+                }
+              }}
             >
               <EraserIcon className="w-5 h-5" />
             </button>
           </div>
 
           {/* Text and Note Tools Group */}
-          <div className="flex items-center gap-2 border-r-2 border-[#404040] pr-4">
+          <div className="flex items-center gap-2 border-r-2 border-border pr-4">
             <button 
-              className={`p-1 rounded ${currentTool === 'text' ? 'bg-[#0078D4]' : 'hover:bg-[#404040]'}`}
+              className="p-2 rounded"
               onClick={() => handleToolChange('text')}
               title="Text"
+              style={{
+                backgroundColor: currentTool === 'text' ? "hsl(var(--primary))" : "transparent",
+                color: currentTool === 'text' ? "hsl(var(--primary-foreground))" : "hsl(var(--foreground))",
+              }}
+              onMouseEnter={(e) => {
+                if (currentTool !== 'text') {
+                  e.currentTarget.style.backgroundColor = "hsl(var(--accent))";
+                  e.currentTarget.style.color = "hsl(var(--accent-foreground))";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (currentTool !== 'text') {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                  e.currentTarget.style.color = "hsl(var(--foreground))";
+                }
+              }}
             >
               <TextIcon className="w-5 h-5" />
             </button>
             <button 
-              className={`p-1 rounded ${currentTool === 'note' ? 'bg-[#0078D4]' : 'hover:bg-[#404040]'}`}
+              className="p-2 rounded"
               onClick={() => handleToolChange('note')}
               title="Note"
+              style={{
+                backgroundColor: currentTool === 'note' ? "hsl(var(--primary))" : "transparent",
+                color: currentTool === 'note' ? "hsl(var(--primary-foreground))" : "hsl(var(--foreground))",
+              }}
+              onMouseEnter={(e) => {
+                if (currentTool !== 'note') {
+                  e.currentTarget.style.backgroundColor = "hsl(var(--accent))";
+                  e.currentTarget.style.color = "hsl(var(--accent-foreground))";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (currentTool !== 'note') {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                  e.currentTarget.style.color = "hsl(var(--foreground))";
+                }
+              }}
             >
               <StickyNoteIcon className="w-5 h-5" />
             </button>
             <button 
-              className="p-1 rounded hover:bg-[#404040]"
+              className="p-2 rounded"
               onClick={handleImageButtonClick}
               title="Insert Image"
+              style={{
+                backgroundColor: "transparent",
+                color: "hsl(var(--foreground))",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "hsl(var(--accent))";
+                e.currentTarget.style.color = "hsl(var(--accent-foreground))";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = "hsl(var(--foreground))";
+              }}
             >
               <ImageIcon className="w-5 h-5" />
             </button>
@@ -508,35 +877,99 @@ export function RedRayShell({ children, onOpenPdf }: RedRayShellProps) {
           </div>
 
           {/* Shape Tools Group */}
-          <div className="flex items-center gap-2 border-r-2 border-[#404040] pr-4">
+          <div className="flex items-center gap-2 border-r-2 border-border pr-4">
             {/* Line and Arrow Tools */}
             <button 
-              className={`p-1 rounded ${currentTool === 'line' ? 'bg-[#0078D4]' : 'hover:bg-[#404040]'}`}
+              className="p-2 rounded"
               onClick={() => handleToolChange('line')}
               title="Line"
+              style={{
+                backgroundColor: currentTool === 'line' ? "hsl(var(--primary))" : "transparent",
+                color: currentTool === 'line' ? "hsl(var(--primary-foreground))" : "hsl(var(--foreground))",
+              }}
+              onMouseEnter={(e) => {
+                if (currentTool !== 'line') {
+                  e.currentTarget.style.backgroundColor = "hsl(var(--accent))";
+                  e.currentTarget.style.color = "hsl(var(--accent-foreground))";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (currentTool !== 'line') {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                  e.currentTarget.style.color = "hsl(var(--foreground))";
+                }
+              }}
             >
               <Minus className="w-5 h-5" />
             </button>
             <button 
-              className={`p-1 rounded ${currentTool === 'arrow' ? 'bg-[#0078D4]' : 'hover:bg-[#404040]'}`}
+              className="p-2 rounded"
               onClick={() => handleToolChange('arrow')}
               title="Arrow"
+              style={{
+                backgroundColor: currentTool === 'arrow' ? "hsl(var(--primary))" : "transparent",
+                color: currentTool === 'arrow' ? "hsl(var(--primary-foreground))" : "hsl(var(--foreground))",
+              }}
+              onMouseEnter={(e) => {
+                if (currentTool !== 'arrow') {
+                  e.currentTarget.style.backgroundColor = "hsl(var(--accent))";
+                  e.currentTarget.style.color = "hsl(var(--accent-foreground))";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (currentTool !== 'arrow') {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                  e.currentTarget.style.color = "hsl(var(--foreground))";
+                }
+              }}
             >
               <ArrowRightIcon className="w-5 h-5" />
             </button>
 
             {/* Rectangle and Circle Tools */}
             <button 
-              className={`p-1 rounded ${currentTool === 'geo-rectangle' ? 'bg-[#0078D4]' : 'hover:bg-[#404040]'}`}
+              className="p-2 rounded"
               onClick={() => handleGeoShapeChange('rectangle')}
               title="Rectangle"
+              style={{
+                backgroundColor: currentTool === 'geo-rectangle' ? "hsl(var(--primary))" : "transparent",
+                color: currentTool === 'geo-rectangle' ? "hsl(var(--primary-foreground))" : "hsl(var(--foreground))",
+              }}
+              onMouseEnter={(e) => {
+                if (currentTool !== 'geo-rectangle') {
+                  e.currentTarget.style.backgroundColor = "hsl(var(--accent))";
+                  e.currentTarget.style.color = "hsl(var(--accent-foreground))";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (currentTool !== 'geo-rectangle') {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                  e.currentTarget.style.color = "hsl(var(--foreground))";
+                }
+              }}
             >
               <SquareIcon className="w-5 h-5" />
             </button>
             <button 
-              className={`p-1 rounded ${currentTool === 'geo-ellipse' ? 'bg-[#0078D4]' : 'hover:bg-[#404040]'}`}
+              className="p-2 rounded"
               onClick={() => handleGeoShapeChange('ellipse')}
               title="Circle"
+              style={{
+                backgroundColor: currentTool === 'geo-ellipse' ? "hsl(var(--primary))" : "transparent",
+                color: currentTool === 'geo-ellipse' ? "hsl(var(--primary-foreground))" : "hsl(var(--foreground))",
+              }}
+              onMouseEnter={(e) => {
+                if (currentTool !== 'geo-ellipse') {
+                  e.currentTarget.style.backgroundColor = "hsl(var(--accent))";
+                  e.currentTarget.style.color = "hsl(var(--accent-foreground))";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (currentTool !== 'geo-ellipse') {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                  e.currentTarget.style.color = "hsl(var(--foreground))";
+                }
+              }}
             >
               <CircleIcon className="w-5 h-5" />
             </button>
@@ -545,11 +978,27 @@ export function RedRayShell({ children, onOpenPdf }: RedRayShellProps) {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button 
-                  className={`p-1 rounded ${currentTool.startsWith('geo-') && !['geo-rectangle', 'geo-ellipse'].includes(currentTool) ? 'bg-[#0078D4]' : 'hover:bg-[#404040]'}`}
+                  className="p-2 rounded"
                   title={GEO_SHAPES.find(s => currentTool === `geo-${s.id}` && !['rectangle', 'ellipse'].includes(s.id))?.label || 'Star'}
                   onClick={() => {
                     const currentShape = GEO_SHAPES.find(s => currentTool === `geo-${s.id}` && !['rectangle', 'ellipse'].includes(s.id)) || GEO_SHAPES[2];
                     handleGeoShapeChange(currentShape.id);
+                  }}
+                  style={{
+                    backgroundColor: currentTool.startsWith('geo-') && !['geo-rectangle', 'geo-ellipse'].includes(currentTool) ? "hsl(var(--primary))" : "transparent",
+                    color: currentTool.startsWith('geo-') && !['geo-rectangle', 'geo-ellipse'].includes(currentTool) ? "hsl(var(--primary-foreground))" : "hsl(var(--foreground))",
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!currentTool.startsWith('geo-') || ['geo-rectangle', 'geo-ellipse'].includes(currentTool)) {
+                      e.currentTarget.style.backgroundColor = "hsl(var(--accent))";
+                      e.currentTarget.style.color = "hsl(var(--accent-foreground))";
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!currentTool.startsWith('geo-') || ['geo-rectangle', 'geo-ellipse'].includes(currentTool)) {
+                      e.currentTarget.style.backgroundColor = "transparent";
+                      e.currentTarget.style.color = "hsl(var(--foreground))";
+                    }
                   }}
                 >
                   {(() => {
@@ -559,13 +1008,13 @@ export function RedRayShell({ children, onOpenPdf }: RedRayShellProps) {
                   })()}
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-48 bg-[#2D2D2D] border-[#404040]">
+              <DropdownMenuContent className="bg-popover border-border">
                 {GEO_SHAPES.filter(shape => !['rectangle', 'ellipse'].includes(shape.id)).map((shape) => {
                   const Icon = shape.icon;
                   return (
                     <DropdownMenuItem
                       key={shape.id}
-                      className="text-white hover:bg-[#404040] cursor-pointer flex items-center gap-2"
+                      className="text-popover-foreground hover:bg-accent cursor-pointer flex items-center gap-2"
                       onClick={() => handleGeoShapeChange(shape.id)}
                     >
                       <Icon className="w-4 h-4" />
@@ -578,18 +1027,50 @@ export function RedRayShell({ children, onOpenPdf }: RedRayShellProps) {
           </div>
 
           {/* Laser and Frame Tools Group */}
-          <div className="flex items-center gap-2 border-r-2 border-[#404040] pr-4">
+          <div className="flex items-center gap-2 border-r-2 border-border pr-4">
             <button 
-              className={`p-1 rounded ${currentTool === 'laser' ? 'bg-[#0078D4]' : 'hover:bg-[#404040]'}`}
+              className="p-2 rounded"
               onClick={() => handleToolChange('laser')}
               title="Laser Pointer"
+              style={{
+                backgroundColor: currentTool === 'laser' ? "hsl(var(--primary))" : "transparent",
+                color: currentTool === 'laser' ? "hsl(var(--primary-foreground))" : "hsl(var(--foreground))",
+              }}
+              onMouseEnter={(e) => {
+                if (currentTool !== 'laser') {
+                  e.currentTarget.style.backgroundColor = "hsl(var(--accent))";
+                  e.currentTarget.style.color = "hsl(var(--accent-foreground))";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (currentTool !== 'laser') {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                  e.currentTarget.style.color = "hsl(var(--foreground))";
+                }
+              }}
             >
               <TargetIcon className="w-5 h-5" />
             </button>
             <button 
-              className={`p-1 rounded ${currentTool === 'frame' ? 'bg-[#0078D4]' : 'hover:bg-[#404040]'}`}
+              className="p-2 rounded"
               onClick={() => handleToolChange('frame')}
               title="Frame"
+              style={{
+                backgroundColor: currentTool === 'frame' ? "hsl(var(--primary))" : "transparent",
+                color: currentTool === 'frame' ? "hsl(var(--primary-foreground))" : "hsl(var(--foreground))",
+              }}
+              onMouseEnter={(e) => {
+                if (currentTool !== 'frame') {
+                  e.currentTarget.style.backgroundColor = "hsl(var(--accent))";
+                  e.currentTarget.style.color = "hsl(var(--accent-foreground))";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (currentTool !== 'frame') {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                  e.currentTarget.style.color = "hsl(var(--foreground))";
+                }
+              }}
             >
               <BoxIcon className="w-5 h-5" />
             </button>
@@ -603,157 +1084,287 @@ export function RedRayShell({ children, onOpenPdf }: RedRayShellProps) {
       {/* Main Content Area */}
       <div className="flex flex-1 min-h-0">
         {/* Left Sidebar - Initially Hidden */}
-        <div className="w-64 bg-[#333333] border-r border-[#404040] hidden lg:block shrink-0">
+        <div className="w-64 bg-sidebar border-r border-border hidden lg:block shrink-0">
           {/* Placeholder for thumbnails */}
         </div>
 
         {/* Main Content with Footer */}
         <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
           {/* Content Container */}
-          <div className="flex-1 min-h-0 overflow-auto">
+          <div className="flex-1 min-h-0 overflow-auto bg-content">
             {children}
           </div>
           
           {/* Bottom Bar */}
-          <div className="h-8 border-t border-[#404040] flex items-center justify-between px-4 bg-[#2B2B2B] shrink-0">
+          <div className="h-8 border-t border-border flex items-center justify-between px-4 bg-statusbar shrink-0">
             {/* Left side - View Controls */}
             <div className="flex items-center gap-2">
-              <button className="p-1 hover:bg-[#404040] rounded" title="Split Vertically">
-                <SplitSquareVerticalIcon className="w-4 h-4" />
-              </button>
-              <button className="p-1 hover:bg-[#404040] rounded" title="Split Horizontally">
-                <SplitSquareHorizontalIcon className="w-4 h-4" />
+              <button 
+                className="p-1 hover:bg-accent rounded group" 
+                title="Split Vertically"
+              >
+                <SplitSquareVerticalIcon className="w-4 h-4 stroke-[1.25] group-hover:stroke-[1.5] active:stroke-[1.75]" />
               </button>
               <button 
-                className="p-1 hover:bg-[#404040] rounded" 
+                className="p-1 hover:bg-accent rounded group" 
+                title="Split Horizontally"
+              >
+                <SplitSquareHorizontalIcon className="w-4 h-4 stroke-[1.25] group-hover:stroke-[1.5] active:stroke-[1.75]" />
+              </button>
+              <button 
+                className="p-1 hover:bg-accent rounded group" 
                 title="Fit to Page"
                 onClick={handleZoomToFit}
               >
-                <MaximizeIcon className="w-4 h-4" />
+                <MaximizeIcon className="w-4 h-4 stroke-[1.25] group-hover:stroke-[1.5] active:stroke-[1.75]" />
               </button>
             </div>
 
             {/* Center - Navigation */}
             <div className="flex items-center gap-2">
-              <button className="p-1 hover:bg-[#404040] rounded" title="First Page">
-                <ChevronsLeftIcon className="w-4 h-4" />
+              <button className="p-1 hover:bg-accent rounded group" title="First Page">
+                <ChevronsLeftIcon className="w-4 h-4 stroke-[1.25] group-hover:stroke-[1.5] active:stroke-[1.75]" />
               </button>
-              <button className="p-1 hover:bg-[#404040] rounded" title="Previous Page">
-                <ChevronLeftIcon className="w-4 h-4" />
+              <button className="p-1 hover:bg-accent rounded group" title="Previous Page">
+                <ChevronLeftIcon className="w-4 h-4 stroke-[1.25] group-hover:stroke-[1.5] active:stroke-[1.75]" />
               </button>
-              <div 
-                className="relative group"
-                onMouseEnter={() => setIsEditingPage(true)}
-                onMouseLeave={() => !pageInputRef.current?.contains(document.activeElement) && setIsEditingPage(false)}
-              >
-                <div className={`flex items-center rounded px-2 py-0.5 w-[6rem] justify-center ${isEditingPage ? 'bg-[#404040]' : 'bg-transparent group-hover:bg-[#404040]'}`}>
-                  {isEditingPage ? (
-                    <input
-                      ref={pageInputRef}
-                      type="text"
-                      value={`${tempPageValue} of ${totalPages}`}
-                      onChange={handlePageInputChange}
-                      onBlur={handlePageInputBlur}
-                      onKeyDown={handlePageInputKeyDown}
-                      className="w-full bg-transparent text-white text-sm focus:outline-none text-center"
-                      autoFocus
-                    />
-                  ) : (
-                    <span className="text-sm text-white text-center w-full group-hover:text-gray-400">{currentPage} of {totalPages}</span>
-                  )}
+              <div className="group relative flex items-center">
+                <div 
+                  className="flex items-center rounded px-2 py-0.5 w-[6rem] justify-center"
+                  style={{
+                    backgroundColor: isEditingPage ? "hsl(var(--accent))" : "hsla(var(--accent) / 0.1)",
+                    color: isEditingPage ? "hsl(var(--accent-foreground))" : "hsl(var(--foreground))",
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isEditingPage) {
+                      e.currentTarget.style.backgroundColor = "hsl(var(--accent))";
+                      e.currentTarget.style.color = "hsl(var(--accent-foreground))";
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isEditingPage) {
+                      e.currentTarget.style.backgroundColor = "hsla(var(--accent) / 0.1)";
+                      e.currentTarget.style.color = "hsl(var(--foreground))";
+                    }
+                  }}
+                >
+                  <input
+                    ref={pageInputRef}
+                    type="text"
+                    className="w-full text-center bg-transparent outline-none"
+                    value={`${currentPage} of ${totalPages}`}
+                    onChange={handlePageInputChange}
+                    onFocus={() => setIsEditingPage(true)}
+                    onBlur={handlePageInputBlur}
+                  />
                 </div>
               </div>
-              <button className="p-1 hover:bg-[#404040] rounded" title="Next Page">
-                <ChevronRightIcon className="w-4 h-4" />
+              <button className="p-1 hover:bg-accent rounded group" title="Next Page">
+                <ChevronRightIcon className="w-4 h-4 stroke-[1.25] group-hover:stroke-[1.5] active:stroke-[1.75]" />
               </button>
-              <button className="p-1 hover:bg-[#404040] rounded" title="Last Page">
-                <ChevronsRightIcon className="w-4 h-4" />
+              <button className="p-1 hover:bg-accent rounded group" title="Last Page">
+                <ChevronsRightIcon className="w-4 h-4 stroke-[1.25] group-hover:stroke-[1.5] active:stroke-[1.75]" />
               </button>
             </div>
 
             {/* Right side - Scale and Size */}
             <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-400">1 in : 20 ft</span>
+              <span className="text-sm text-muted-foreground">1 in : 20 ft</span>
               <button 
-                className="p-1 hover:bg-[#404040] rounded" 
+                className="p-1 hover:bg-accent rounded group" 
                 title="Zoom Out"
                 onClick={handleZoomOut}
               >
-                <MinusIcon className="w-4 h-4" />
+                <MinusIcon className="w-4 h-4 stroke-[1.25] group-hover:stroke-[1.5] active:stroke-[1.75]" />
               </button>
-              <div 
-                className="relative group"
-                onMouseEnter={() => setIsEditingZoom(true)}
-                onMouseLeave={() => !zoomInputRef.current?.contains(document.activeElement) && setIsEditingZoom(false)}
-              >
-                <div className={`flex items-center rounded px-2 py-0.5 min-w-[3.5rem] justify-end ${isEditingZoom ? 'bg-[#404040]' : 'bg-transparent group-hover:bg-[#404040]'}`}>
-                  {isEditingZoom ? (
-                    <input
-                      ref={zoomInputRef}
-                      type="text"
-                      value={tempZoomValue}
-                      onChange={handleZoomInputChange}
-                      onBlur={handleZoomInputBlur}
-                      onKeyDown={handleZoomInputKeyDown}
-                      className="w-8 bg-transparent text-white text-sm focus:outline-none text-right"
-                      autoFocus
-                    />
-                  ) : (
-                    <span className="text-sm text-white text-right w-8 group-hover:text-gray-400">{zoomLevel}</span>
-                  )}
-                  <span className={`text-sm ml-1 ${isEditingZoom ? 'text-white' : 'text-white group-hover:text-gray-400'}`}>%</span>
+              <div className="group relative flex items-center">
+                <div 
+                  className="flex items-center rounded px-2 py-0.5 w-[6rem] justify-center"
+                  style={{
+                    backgroundColor: isEditingZoom ? "hsl(var(--accent))" : "hsla(var(--accent) / 0.1)",
+                    color: isEditingZoom ? "hsl(var(--accent-foreground))" : "hsl(var(--foreground))",
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isEditingZoom) {
+                      e.currentTarget.style.backgroundColor = "hsl(var(--accent))";
+                      e.currentTarget.style.color = "hsl(var(--accent-foreground))";
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isEditingZoom) {
+                      e.currentTarget.style.backgroundColor = "hsla(var(--accent) / 0.1)";
+                      e.currentTarget.style.color = "hsl(var(--foreground))";
+                    }
+                  }}
+                >
+                  <input
+                    type="text"
+                    className="w-12 text-center bg-transparent outline-none"
+                    value={isEditingZoom ? tempZoomValue : Math.round(zoomLevel)}
+                    onChange={handleZoomInputChange}
+                    onFocus={() => {
+                      setIsEditingZoom(true);
+                      setTempZoomValue(Math.round(zoomLevel).toString());
+                    }}
+                    onBlur={handleZoomInputBlur}
+                  />
+                  <span className="text-sm">%</span>
                 </div>
               </div>
               <button 
-                className="p-1 hover:bg-[#404040] rounded" 
+                className="p-1 hover:bg-accent rounded group" 
                 title="Zoom In"
                 onClick={handleZoomIn}
               >
-                <PlusIcon className="w-4 h-4" />
+                <PlusIcon className="w-4 h-4 stroke-[1.25] group-hover:stroke-[1.5] active:stroke-[1.75]" />
               </button>
-              <span className="text-sm text-gray-400">24" x 36"</span>
+              <span className="text-sm text-muted-foreground">24" x 36"</span>
             </div>
           </div>
         </div>
 
         {/* Right Toolbar */}
-        <div className="w-12 bg-[#333333] border-l border-[#404040] hidden lg:block shrink-0">
+        <div className="w-12 bg-sidebar border-l border-border hidden lg:block shrink-0">
           <div className="flex flex-col h-full">
             <div className="flex flex-col items-center gap-1 p-1">
-              <button className="p-1 hover:bg-[#404040] rounded" title="Settings">
+              <button 
+                className="p-1 rounded" 
+                title="Settings"
+                style={{
+                  backgroundColor: "transparent",
+                  color: "hsl(var(--foreground))",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = "hsl(var(--accent))";
+                  e.currentTarget.style.color = "hsl(var(--accent-foreground))";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                  e.currentTarget.style.color = "hsl(var(--foreground))";
+                }}
+              >
                 <SettingsIcon className="w-5 h-5" />
               </button>
-              <button className="p-1 hover:bg-[#404040] rounded" title="Ruler">
+              <button 
+                className="p-1 rounded" 
+                title="Ruler"
+                style={{
+                  backgroundColor: "transparent",
+                  color: "hsl(var(--foreground))",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = "hsl(var(--accent))";
+                  e.currentTarget.style.color = "hsl(var(--accent-foreground))";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                  e.currentTarget.style.color = "hsl(var(--foreground))";
+                }}
+              >
                 <RulerIcon className="w-5 h-5" />
               </button>
-              <button className="p-1 hover:bg-[#404040] rounded" title="Location">
+              <button 
+                className="p-1 rounded" 
+                title="Location"
+                style={{
+                  backgroundColor: "transparent",
+                  color: "hsl(var(--foreground))",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = "hsl(var(--accent))";
+                  e.currentTarget.style.color = "hsl(var(--accent-foreground))";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                  e.currentTarget.style.color = "hsl(var(--foreground))";
+                }}
+              >
                 <FileTextIcon className="w-5 h-5" />
               </button>
-              <button className="p-1 hover:bg-[#404040] rounded" title="Layout">
+              <button 
+                className="p-1 rounded" 
+                title="Layout"
+                style={{
+                  backgroundColor: "transparent",
+                  color: "hsl(var(--foreground))",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = "hsl(var(--accent))";
+                  e.currentTarget.style.color = "hsl(var(--accent-foreground))";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                  e.currentTarget.style.color = "hsl(var(--foreground))";
+                }}
+              >
                 <LayoutGridIcon className="w-5 h-5" />
               </button>
-              <button className="p-1 hover:bg-[#404040] rounded" title="Search">
+              <button 
+                className="p-1 rounded" 
+                title="Search"
+                style={{
+                  backgroundColor: "transparent",
+                  color: "hsl(var(--foreground))",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = "hsl(var(--accent))";
+                  e.currentTarget.style.color = "hsl(var(--accent-foreground))";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                  e.currentTarget.style.color = "hsl(var(--foreground))";
+                }}
+              >
                 <SearchIcon className="w-5 h-5" />
               </button>
             </div>
             <div className="flex-1"></div>
-            <div className="flex flex-col items-center gap-1 p-1 border-t border-[#404040]">
-              <button className="p-1 text-gray-500 cursor-not-allowed" title="AI Assistant (Inactive)">
+            <div className="flex flex-col items-center gap-1 p-1 border-t border-border">
+              <button 
+                className="p-1 opacity-40" 
+                title="AI Assistant (Inactive)"
+                style={{
+                  backgroundColor: "transparent",
+                  color: "hsl(var(--foreground))",
+                }}
+              >
                 <SparklesIcon className="w-5 h-5" />
               </button>
-              <button className="p-1 text-gray-500 cursor-not-allowed" title="Support (Inactive)">
+              <button 
+                className="p-1 opacity-40" 
+                title="Support (Inactive)"
+                style={{
+                  backgroundColor: "transparent",
+                  color: "hsl(var(--foreground))",
+                }}
+              >
                 <HelpCircleIcon className="w-5 h-5" />
               </button>
-              <button className="p-1 text-gray-500 cursor-not-allowed" title="Messages (Inactive)">
+              <button 
+                className="p-1 opacity-40" 
+                title="Messages (Inactive)"
+                style={{
+                  backgroundColor: "transparent",
+                  color: "hsl(var(--foreground))",
+                }}
+              >
                 <MessageSquareIcon className="w-5 h-5" />
               </button>
-              <button className="p-1 text-gray-500 cursor-not-allowed" title="Debugger (Inactive)">
+              <button 
+                className="p-1 opacity-40" 
+                title="Debugger (Inactive)"
+                style={{
+                  backgroundColor: "transparent",
+                  color: "hsl(var(--foreground))",
+                }}
+              >
                 <BugIcon className="w-5 h-5" />
               </button>
             </div>
           </div>
         </div>
       </div>
+      <SettingsDialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen} />
     </div>
   );
 } 
