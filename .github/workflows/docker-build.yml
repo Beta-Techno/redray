@@ -1,0 +1,43 @@
+name: Build and Push Docker Image
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  build-and-push:
+    name: Build and Push Docker Image
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        
+      - name: Debug Directory Structure
+        run: |
+          echo "Repository contents:"
+          ls -la
+          echo "Contents of src directory:"
+          ls -la src/
+          echo "Contents of src/lib directory:"
+          ls -la src/lib/
+          
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ secrets.CR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+        
+      - name: Build Docker Image with Debug
+        run: |
+          docker build -t ghcr.io/beta-techno/redray:latest . 2>&1 | tee build.log
+          
+      - name: Upload Build Logs
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-logs
+          path: build.log
+          
+      - name: Push Docker Image
+        if: success()
+        run: docker push ghcr.io/beta-techno/redray:latest
