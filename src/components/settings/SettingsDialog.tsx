@@ -22,8 +22,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Checkbox } from "@/components/ui/checkbox";
 import { 
   UserIcon, 
   PaletteIcon, 
@@ -32,12 +30,7 @@ import {
   MonitorIcon,
   ShieldIcon,
   CloudIcon,
-  BellIcon,
-  MailIcon,
-  GlobeIcon,
-  EyeIcon,
   KeyIcon,
-  X,
 } from 'lucide-react';
 import { useTheme } from "next-themes";
 import { Moon, Sun } from "lucide-react";

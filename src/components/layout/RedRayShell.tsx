@@ -13,8 +13,7 @@ import { Menubar } from '@/components/ui/menubar';
 import { Pdf } from '@/components/pdf-editor/PdfPicker';
 import { useEditorContext } from '@/components/editor/EditorContext';
 import { loadPdf } from '@/utils/pdf';
-import { TLAsset, TLImageShape, TLAssetId, TLShapeId, IndexKey, GeoShapeGeoStyle, react } from '@tldraw/tldraw';
-import { TLShape } from '@tldraw/tldraw';
+import { GeoShapeGeoStyle, react } from '@tldraw/tldraw';
 import { 
   Undo2Icon, 
   Redo2Icon, 
@@ -25,7 +24,6 @@ import {
   SaveIcon,
   PrinterIcon,
   SendIcon,
-  ZoomInIcon,
   LayoutGridIcon,
   MousePointer2Icon,
   HandIcon,
@@ -35,18 +33,13 @@ import {
   ChevronRightIcon,
   ChevronsLeftIcon,
   ChevronsRightIcon,
-  ZoomOutIcon,
   MaximizeIcon,
-  MinimizeIcon,
   SettingsIcon,
   HelpCircleIcon,
   SearchIcon,
   MessageSquareIcon,
   BellIcon,
   UserIcon,
-  ChevronDownIcon,
-  ChevronUpIcon,
-  TypeIcon,
   StickyNoteIcon,
   SquareIcon,
   CircleIcon,
@@ -73,7 +66,6 @@ import {
   RulerIcon,
   SplitSquareHorizontalIcon,
   SplitSquareVerticalIcon,
-  ScaleIcon,
   FileTextIcon,
   PlusIcon,
   MinusIcon,
@@ -130,9 +122,8 @@ export function RedRayShell({ children, onOpenPdf }: RedRayShellProps) {
   const [isEditingZoom, setIsEditingZoom] = useState(false);
   const [tempZoomValue, setTempZoomValue] = useState('100');
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const zoomInputRef = useRef<HTMLInputElement>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const [totalPages] = useState(1);
   const [isEditingPage, setIsEditingPage] = useState(false);
   const [tempPageValue, setTempPageValue] = useState('1');
   const pageInputRef = useRef<HTMLInputElement>(null);
@@ -221,11 +212,6 @@ export function RedRayShell({ children, onOpenPdf }: RedRayShellProps) {
     }
   };
 
-  const handleZoomInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      handleZoomInputBlur();
-    }
-  };
 
   const handleUndo = () => {
     if (!isEditorReady()) return;
@@ -320,11 +306,6 @@ export function RedRayShell({ children, onOpenPdf }: RedRayShellProps) {
     setIsEditingPage(false);
   };
 
-  const handlePageInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      handlePageInputBlur();
-    }
-  };
 
   // Add effect to reset button styles when states change
   useEffect(() => {
@@ -340,6 +321,7 @@ export function RedRayShell({ children, onOpenPdf }: RedRayShellProps) {
       redoButtonRef.style.backgroundColor = "transparent";
       redoButtonRef.style.color = "hsl(var(--foreground))";
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasSelectedShapes, canUndo, canRedo]);
 
   return (
@@ -1218,7 +1200,7 @@ export function RedRayShell({ children, onOpenPdf }: RedRayShellProps) {
               >
                 <PlusIcon className="w-4 h-4 stroke-[1.25] group-hover:stroke-[1.5] active:stroke-[1.75]" />
               </button>
-              <span className="text-sm text-muted-foreground">24" x 36"</span>
+              <span className="text-sm text-muted-foreground">24&quot; x 36&quot;</span>
             </div>
           </div>
         </div>

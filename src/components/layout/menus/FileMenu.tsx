@@ -1,5 +1,5 @@
 import { MenubarContent, MenubarItem, MenubarMenu, MenubarSeparator, MenubarShortcut, MenubarSub, MenubarSubContent, MenubarSubTrigger, MenubarTrigger } from "@/components/ui/menubar";
-import { FileIcon, FolderIcon, PlusIcon, BookIcon, LayersIcon, MailIcon, PrinterIcon, Share2Icon, Settings2Icon, LogOutIcon, UserIcon, EyeIcon, PencilIcon, KeyboardIcon, ShieldIcon } from "lucide-react";
+import { FileIcon, FolderIcon, LayersIcon, MailIcon, PrinterIcon, Share2Icon, Settings2Icon, LogOutIcon, UserIcon, EyeIcon, PencilIcon, KeyboardIcon, ShieldIcon } from "lucide-react";
 import { useState } from 'react';
 import { Pdf } from '@/components/pdf-editor/PdfPicker';
 import { loadPdf } from '@/utils/pdf';

@@ -12,12 +12,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-const themes = [
-  { name: "light", label: "Light" },
-  { name: "dark", label: "Dark" },
-  { name: "system", label: "System" },
-]
-
 const colors = [
   { name: "slate", label: "Slate" },
   { name: "zinc", label: "Zinc" },
@@ -28,7 +22,7 @@ const colors = [
 ]
 
 export function ThemeSwitcher() {
-  const { setTheme, theme } = useTheme()
+  const { setTheme } = useTheme()
   const [currentColor, setCurrentColor] = React.useState("slate")
 
   React.useEffect(() => {

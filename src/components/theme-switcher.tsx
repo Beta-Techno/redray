@@ -34,7 +34,7 @@ const colors = [
 ]
 
 export function ThemeSwitcher() {
-  const { setTheme, theme } = useTheme()
+  const { setTheme } = useTheme()
   const [color, setColor] = React.useState("slate")
 
   React.useEffect(() => {

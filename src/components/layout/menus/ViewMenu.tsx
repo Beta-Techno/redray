@@ -1,51 +1,20 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import { useEditorContext } from '@/components/editor/EditorContext';
+import { useRef, useEffect } from 'react';
 import { MenubarContent, MenubarItem, MenubarMenu, MenubarSeparator, MenubarShortcut, MenubarSub, MenubarSubContent, MenubarSubTrigger, MenubarTrigger } from "@/components/ui/menubar";
 
 export function ViewMenu() {
-  const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const { editor } = useEditorContext();
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
+        // Handle click outside if needed
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
-
-  const handleZoom = (zoomLevel: number) => {
-    if (!editor) return;
-    const camera = editor.getCamera();
-    editor.setCamera({ 
-      x: camera.x,
-      y: camera.y,
-      z: zoomLevel 
-    });
-  };
-
-  const handleFitToPage = () => {
-    if (!editor) return;
-    editor.zoomToFit({ 
-      animation: {
-        duration: 200
-      }
-    });
-  };
-
-  const handleFitToWidth = () => {
-    if (!editor) return;
-    editor.zoomToFit({ 
-      animation: {
-        duration: 200
-      }
-    });
-  };
 
   return (
     <MenubarMenu>
