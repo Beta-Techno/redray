@@ -4,37 +4,57 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:  # Allow manual trigger
 
 jobs:
   build-and-push:
     name: Build and Push Docker Image
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-        
+
+      - name: Debug Directory Structure
+        run: |
+          echo "Repository contents:"
+          ls -la
+          echo "\nDockerfile contents:"
+          cat Dockerfile
+
+      - name: Prepare image name
+        run: |
+          IMAGE_NAME="ghcr.io/${GITHUB_REPOSITORY,,}"
+          echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV
+          echo "LATEST_TAG=$IMAGE_NAME:latest" >> $GITHUB_ENV
+          echo "SHA_TAG=$IMAGE_NAME:${GITHUB_SHA}" >> $GITHUB_ENV
+
       - name: Log in to GitHub Container Registry
         run: echo "${{ secrets.CR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-        
-      - name: Build Docker Image
+
+      - name: Build Docker Image with Debug
+        env:
+          NODE_ENV: production
         run: |
           docker build \
-            -t ghcr.io/beta-techno/redray:latest \
-            -t ghcr.io/beta-techno/redray:${{ github.sha }} \
+            -t "$LATEST_TAG" \
+            -t "$SHA_TAG" \
             . 2>&1 | tee build.log
-          
+          echo "Built with:"
+          echo "  NODE_ENV=$NODE_ENV"
+
       - name: Upload Build Logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: build-logs
           path: build.log
-          retention-days: 7
-          
+
       - name: Push Docker Image
-        if: success()
+        if: github.event_name == 'push'
         run: |
-          docker push ghcr.io/beta-techno/redray:latest
-          docker push ghcr.io/beta-techno/redray:${{ github.sha }}
+          docker push "$LATEST_TAG"
+          docker push "$SHA_TAG"
