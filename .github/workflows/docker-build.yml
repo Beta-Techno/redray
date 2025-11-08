@@ -33,7 +33,13 @@ jobs:
           echo "SHA_TAG=$IMAGE_NAME:${GITHUB_SHA}" >> $GITHUB_ENV
 
       - name: Log in to GitHub Container Registry
-        run: echo "${{ secrets.CR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+        run: |
+          if [ -z "${{ secrets.CR_PAT }}" ]; then
+            echo "ERROR: CR_PAT secret is not set in repository secrets"
+            echo "Please add CR_PAT secret at: Settings > Secrets and variables > Actions"
+            exit 1
+          fi
+          echo "${{ secrets.CR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Build Docker Image with Debug
         env:
