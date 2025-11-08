@@ -15,21 +15,15 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
         
-      - name: Debug Directory Structure
-        run: |
-          echo "Repository contents:"
-          ls -la
-          echo "Contents of src directory:"
-          ls -la src/
-          echo "Contents of src/lib directory:"
-          ls -la src/lib/
-          
       - name: Log in to GitHub Container Registry
         run: echo "${{ secrets.CR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
         
-      - name: Build Docker Image with Debug
+      - name: Build Docker Image
         run: |
-          docker build -t ghcr.io/beta-techno/redray:latest . 2>&1 | tee build.log
+          docker build \
+            -t ghcr.io/beta-techno/redray:latest \
+            -t ghcr.io/beta-techno/redray:${{ github.sha }} \
+            . 2>&1 | tee build.log
           
       - name: Upload Build Logs
         if: always()
@@ -37,7 +31,10 @@ jobs:
         with:
           name: build-logs
           path: build.log
+          retention-days: 7
           
       - name: Push Docker Image
         if: success()
-        run: docker push ghcr.io/beta-techno/redray:latest
+        run: |
+          docker push ghcr.io/beta-techno/redray:latest
+          docker push ghcr.io/beta-techno/redray:${{ github.sha }}
