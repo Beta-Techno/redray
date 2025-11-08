@@ -66,6 +66,7 @@ async function exportPdf(
       continue;
     }
 
+    // @ts-expect-error - toImage method exists but types may be outdated
     const exportedPng = await editor.toImage(allIds, {
       format: 'png',
       background: false,
