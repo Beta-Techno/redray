@@ -10,16 +10,10 @@ jobs:
   build-and-push:
     name: Build and Push Docker Image
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
     
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-        
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
         
       - name: Debug Directory Structure
         run: |
@@ -31,16 +25,11 @@ jobs:
           ls -la src/lib/
           
       - name: Log in to GitHub Container Registry
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+        run: echo "${{ secrets.CR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
         
-      - name: Build and Push Docker Image
+      - name: Build Docker Image with Debug
         run: |
-          docker buildx build \
-            --platform linux/amd64,linux/arm64 \
-            --tag ghcr.io/beta-techno/redray:latest \
-            --tag ghcr.io/beta-techno/redray:${{ github.sha }} \
-            --push \
-            . 2>&1 | tee build.log
+          docker build -t ghcr.io/beta-techno/redray:latest . 2>&1 | tee build.log
           
       - name: Upload Build Logs
         if: always()
@@ -48,4 +37,7 @@ jobs:
         with:
           name: build-logs
           path: build.log
-          retention-days: 7
+          
+      - name: Push Docker Image
+        if: success()
+        run: docker push ghcr.io/beta-techno/redray:latest
